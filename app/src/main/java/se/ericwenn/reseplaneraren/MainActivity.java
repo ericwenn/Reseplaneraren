@@ -2,10 +2,9 @@ package se.ericwenn.reseplaneraren;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
-public class MainActivity extends FragmentActivity implements SearchFragment.OnSearchInteractionListener {
+public class MainActivity extends FragmentActivity {
 
     private static final String TAG = "MainActivity";
 
@@ -21,37 +20,38 @@ public class MainActivity extends FragmentActivity implements SearchFragment.OnS
 
         MapFragment acf = MapFragment.newInstance();
 
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, acf).commit();
-        findViewById(R.id.fragment_container).requestFocus();
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, acf, "mapFragment").commit();
     }
+
+
 
 
     @Override
-    public void onFocusSearch(String searchTerm, SearchFragment.SearchField field) {
+    protected void onStart() {
+        super.onStart();
 
-        AutoCompleteFragment acf;
-        if(getSupportFragmentManager().findFragmentByTag("autoCompleteFragment") == null) {
-            Log.d(TAG, "onFocusSearch: Is not open");
-            acf = AutoCompleteFragment.newInstance();
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment_container, acf, "autoCompleteFragment");
-            ft.addToBackStack(null);
-            ft.commit();
-        } else {
-            acf = (AutoCompleteFragment) getSupportFragmentManager().findFragmentByTag("autoCompleteFragment");
-        }
+        final SearchController sc = SearchController.getInstance();
+        final SearchFragmentManager sfm = SearchFragmentManager.getInstance( getSupportFragmentManager(), R.id.fragment_container);
 
-        onFreeSearch(searchTerm, field);
+        sc.addOnSearchTermChangeListener(new ISearchController.SearchTermChangeListener() {
+            @Override
+            public void onChange(String oldSearchTerm, String newSearchTerm, ISearchController.SearchField field) {
 
+                Log.d(TAG, "onChange() called with: " + "oldSearchTerm = [" + oldSearchTerm + "], newSearchTerm = [" + newSearchTerm + "], field = [" + field + "]");
+                // Search is active
+                if( newSearchTerm != null ) {
 
-    }
+                    // start autoCompleteFragment if not started
+                    sfm.requestAutoComplete(newSearchTerm);
 
-    @Override
-    public void onFreeSearch(String searchTerm, SearchFragment.SearchField field) {
-        Log.d(TAG, "onFreeSearch() called with: " + "searchTerm = [" + searchTerm + "], field = [" + field + "]");
-        acf.setSearchTerm( searchTerm );
+                }
+            }
+        });
     }
 
 
-    private void
+
+
+
+
 }

@@ -21,14 +21,9 @@ public class SearchFragment extends Fragment {
 
 
     private static final String TAG = "SearchFragment";
-    private OnSearchInteractionListener mListener;
     private EditText originInput;
     private EditText destinationInput;
 
-    public enum SearchField {
-        DESTINATION,
-        ORIGIN
-    }
 
 
     public SearchFragment() {
@@ -72,11 +67,11 @@ public class SearchFragment extends Fragment {
         super.onStart();
 
 
-        SearchWatcher originSearchWatcher = new SearchWatcher(SearchField.ORIGIN);
+        SearchWatcher originSearchWatcher = new SearchWatcher(ISearchController.SearchField.ORIGIN);
         originInput.addTextChangedListener( originSearchWatcher );
         originInput.setOnFocusChangeListener( originSearchWatcher );
 
-        SearchWatcher destinationSearchWatcher = new SearchWatcher(SearchField.DESTINATION);
+        SearchWatcher destinationSearchWatcher = new SearchWatcher(ISearchController.SearchField.DESTINATION);
         destinationInput.addTextChangedListener(destinationSearchWatcher );
         destinationInput.setOnFocusChangeListener(destinationSearchWatcher );
     }
@@ -84,18 +79,11 @@ public class SearchFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnSearchInteractionListener) {
-            mListener = (OnSearchInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnSearchInteractionListener");
-        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
 
@@ -103,18 +91,12 @@ public class SearchFragment extends Fragment {
 
 
 
-    public interface OnSearchInteractionListener {
-
-        void onFocusSearch(String searchTerm, SearchField field);
-        void onFreeSearch(String searchTerm, SearchField field);
-
-    }
 
 
     public class SearchWatcher implements TextWatcher, View.OnFocusChangeListener {
 
-        private SearchField field;
-        public SearchWatcher( SearchField field) {
+        private ISearchController.SearchField field;
+        public SearchWatcher( ISearchController.SearchField field) {
             this.field = field;
         }
 
@@ -130,14 +112,16 @@ public class SearchFragment extends Fragment {
 
         @Override
         public void afterTextChanged(Editable s) {
-            mListener.onFreeSearch(s.toString(), field);
+            SearchController.getInstance().setSearchTerm( s.toString(), field);
         }
 
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
             if( hasFocus ) {
-
-                mListener.onFocusSearch(((EditText) v).getText().toString(), field);
+                EditText t = (EditText) v;
+                SearchController.getInstance().setSearchTerm(t.getText().toString(), field);
+            } else {
+                SearchController.getInstance().setSearchTerm(null, field);
             }
         }
     }

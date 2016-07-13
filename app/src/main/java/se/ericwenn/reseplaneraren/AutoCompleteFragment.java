@@ -1,11 +1,15 @@
 package se.ericwenn.reseplaneraren;
 
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 
 /**
@@ -17,7 +21,8 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class AutoCompleteFragment extends Fragment {
-
+    private static final String TAG = "AutoCompleteFragment";
+    private TextView text;
 
     public AutoCompleteFragment() {
         // Required empty public constructor
@@ -30,8 +35,12 @@ public class AutoCompleteFragment extends Fragment {
      * @return A new instance of fragment AutoCompleteFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AutoCompleteFragment newInstance() {
+    public static AutoCompleteFragment newInstance( String searchTerm) {
+        Bundle args = new Bundle();
+        args.putString("SearchTerm", searchTerm);
         AutoCompleteFragment fragment = new AutoCompleteFragment();
+
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -44,9 +53,25 @@ public class AutoCompleteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_auto_complete, container, false);
+
+        Log.d(TAG, "onCreateView: s");
+        View v = inflater.inflate(R.layout.fragment_auto_complete, container, false);
+
+        return v;
     }
 
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        text = (TextView) view.findViewById(R.id.search_term);
+
+        if (savedInstanceState != null) {
+            setSearchTerm( savedInstanceState.getString("SearchTerm"));
+        }
+        Log.d(TAG, "onViewCreated: textView found");
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -66,5 +91,14 @@ public class AutoCompleteFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+
+
+
+
+    public void setSearchTerm(final String searchTerm ) {
+        text.setText(searchTerm);
+
     }
 }
