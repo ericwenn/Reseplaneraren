@@ -47,10 +47,11 @@ public class AutoCompleteFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_auto_complete, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-    }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 
     /**
      * This interface must be implemented by activities that contain this

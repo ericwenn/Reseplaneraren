@@ -2,7 +2,10 @@ package se.ericwenn.reseplaneraren;
 
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +29,7 @@ public class MapFragment extends Fragment {
 
     private static final String TAG = "MapFragment";
     private GoogleMap mMap;
+    private SupportMapFragment mapFragment;
 
     public MapFragment() {
         // Required empty public constructor
@@ -54,23 +58,36 @@ public class MapFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_map, container, false);
         // Inflate the layout for this fragment
-        SupportMapFragment mapFragment = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map));
 
         Log.d(TAG, "onCreateView: mapFragment == null:"+ (mapFragment==null) );
 
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(GoogleMap googleMap) {
-                    mMap = googleMap;
-
-                    LatLng sydney = new LatLng(-34, 151);
-                    mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-                }
-            });
-        }
         return v;
+
     }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        FragmentManager fm = getChildFragmentManager();
+        mapFragment = (SupportMapFragment) fm.findFragmentByTag("mapFragment");
+        if (mapFragment == null) {
+            mapFragment = new SupportMapFragment();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add(R.id.mapFragmentContainer, mapFragment, "mapFragment");
+            ft.commit();
+            fm.executePendingTransactions();
+        }
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                mMap = googleMap;
+
+                LatLng sydney = new LatLng(-34, 151);
+                mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            }
+        });
+    }
+
 
 }
