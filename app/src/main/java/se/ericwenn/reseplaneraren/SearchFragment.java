@@ -11,6 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import se.ericwenn.reseplaneraren.controller.ISearchField;
+import se.ericwenn.reseplaneraren.controller.SearchController;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link SearchFragment#newInstance} factory method to
@@ -24,6 +27,9 @@ public class SearchFragment extends Fragment {
     private EditText originInput;
     private EditText destinationInput;
 
+
+    private ISearchField originField = null;
+    private ISearchField destinationField = null;
 
 
     public SearchFragment() {
@@ -67,11 +73,18 @@ public class SearchFragment extends Fragment {
         super.onStart();
 
 
-        SearchWatcher originSearchWatcher = new SearchWatcher(ISearchController.SearchField.ORIGIN);
+        originField = SearchController.getInstance().getSearchFieldManager().getOriginField();
+        destinationField = SearchController.getInstance().getSearchFieldManager().getDestinationField();
+
+
+
+
+
+        SearchWatcher originSearchWatcher = new SearchWatcher( originField );
         originInput.addTextChangedListener( originSearchWatcher );
         originInput.setOnFocusChangeListener( originSearchWatcher );
 
-        SearchWatcher destinationSearchWatcher = new SearchWatcher(ISearchController.SearchField.DESTINATION);
+        SearchWatcher destinationSearchWatcher = new SearchWatcher( destinationField );
         destinationInput.addTextChangedListener(destinationSearchWatcher );
         destinationInput.setOnFocusChangeListener(destinationSearchWatcher );
     }
@@ -95,8 +108,8 @@ public class SearchFragment extends Fragment {
 
     public class SearchWatcher implements TextWatcher, View.OnFocusChangeListener {
 
-        private ISearchController.SearchField field;
-        public SearchWatcher( ISearchController.SearchField field) {
+        private ISearchField field;
+        public SearchWatcher( ISearchField field ) {
             this.field = field;
         }
 
@@ -112,16 +125,15 @@ public class SearchFragment extends Fragment {
 
         @Override
         public void afterTextChanged(Editable s) {
-            SearchController.getInstance().setSearchTerm( s.toString(), field);
+            field.setSearchTerm( s.toString() );
         }
 
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
             if( hasFocus ) {
-                EditText t = (EditText) v;
-                SearchController.getInstance().setSearchTerm(t.getText().toString(), field);
+                SearchController.getInstance().getSearchFieldManager().setActiveField(field);
             } else {
-                SearchController.getInstance().setSearchTerm(null, field);
+             //   SearchController.getInstance().getSearchFieldManager().removeActiveField();
             }
         }
     }

@@ -1,7 +1,7 @@
 package se.ericwenn.reseplaneraren;
 
+import android.content.Context;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,6 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import se.ericwenn.reseplaneraren.controller.ISearchField;
+import se.ericwenn.reseplaneraren.controller.ISearchFieldManager;
+import se.ericwenn.reseplaneraren.controller.SearchController;
 
 
 /**
@@ -35,12 +39,8 @@ public class AutoCompleteFragment extends Fragment {
      * @return A new instance of fragment AutoCompleteFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AutoCompleteFragment newInstance( String searchTerm) {
-        Bundle args = new Bundle();
-        args.putString("SearchTerm", searchTerm);
+    public static AutoCompleteFragment newInstance() {
         AutoCompleteFragment fragment = new AutoCompleteFragment();
-
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -67,15 +67,52 @@ public class AutoCompleteFragment extends Fragment {
 
         text = (TextView) view.findViewById(R.id.search_term);
 
-        if (savedInstanceState != null) {
-            setSearchTerm( savedInstanceState.getString("SearchTerm"));
-        }
         Log.d(TAG, "onViewCreated: textView found");
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    public void onAttach(Context context) {
+        Log.d(TAG, "onAttach() called with: " + "context = [" + context + "]");
+        super.onAttach(context);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        final FieldListener listener = new FieldListener();
+
+        Log.d(TAG, "onResume() called with: " + "");
+
+        SearchController.getInstance().getSearchFieldManager().addActiveSearchFieldChangeListener(new ISearchFieldManager.IActiveSearchFieldChangeListener() {
+            @Override
+            public void onChange(ISearchField oldField, ISearchField newField) {
+                if( oldField != null) {
+                    oldField.removeFieldListener(listener);
+                }
+                newField.addFieldListener(listener);
+                listener.onSearchTermChanged( newField.getSearchTerm() );
+            }
+        });
+        if( SearchController.getInstance().getSearchFieldManager().getActiveField() != null) {
+            SearchController.getInstance().getSearchFieldManager().getActiveField().addFieldListener(listener);
+            listener.onSearchTermChanged(SearchController.getInstance().getSearchFieldManager().getActiveField().getSearchTerm());
+        }
+
+    }
+
+
+    class FieldListener implements ISearchField.IFieldListener {
+
+        @Override
+        public void onSearchTermChanged(String searchTerm) {
+            text.setText(searchTerm);
+        }
+
+        @Override
+        public void onFinalChanged(ISearchField.Final finalValue) {
+
+        }
     }
 
     /**
