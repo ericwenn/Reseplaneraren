@@ -1,10 +1,14 @@
 package se.ericwenn.reseplaneraren.controller;
 
+import se.ericwenn.reseplaneraren.model.data.ILocation;
+
 /**
  * Created by ericwenn on 7/14/16.
  */
 public interface ISearchField {
-    void setFinal( Final finalValue );
+    void setFinal( ILocation finalValue );
+    ILocation getFinal();
+
     void setSearchTerm( String searchTerm );
     String getSearchTerm();
 
@@ -12,10 +16,7 @@ public interface ISearchField {
     void removeFieldListener( IFieldListener listener );
     interface IFieldListener {
         void onSearchTermChanged( String searchTerm );
-        void onFinalChanged( Final finalValue );
+        void onFinalChanged( ILocation finalValue );
     }
 
-    interface Final {
-
-    }
 }

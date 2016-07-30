@@ -5,15 +5,23 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import se.ericwenn.reseplaneraren.controller.ISearchField;
 import se.ericwenn.reseplaneraren.controller.ISearchFieldManager;
 import se.ericwenn.reseplaneraren.controller.SearchController;
+import se.ericwenn.reseplaneraren.model.data.ILocation;
+import se.ericwenn.reseplaneraren.model.data.IVasttrafikAPIBridge;
+import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
 
 
 /**
@@ -26,7 +34,10 @@ import se.ericwenn.reseplaneraren.controller.SearchController;
  */
 public class AutoCompleteFragment extends Fragment {
     private static final String TAG = "AutoCompleteFragment";
-    private TextView text;
+
+    private RecyclerView mRecyclerView;
+    private AutoCompleteAdapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     public AutoCompleteFragment() {
         // Required empty public constructor
@@ -56,6 +67,17 @@ public class AutoCompleteFragment extends Fragment {
 
         Log.d(TAG, "onCreateView: s");
         View v = inflater.inflate(R.layout.fragment_auto_complete, container, false);
+        mRecyclerView = (RecyclerView) v.findViewById(R.id.results_recyclerview);
+        mRecyclerView.setHasFixedSize(true);
+
+        mLayoutManager = new LinearLayoutManager( getActivity() );
+        mRecyclerView.setLayoutManager( mLayoutManager );
+
+        mAdapter = new AutoCompleteAdapter();
+        mRecyclerView.setAdapter(mAdapter);
+
+
+
 
         return v;
     }
@@ -65,7 +87,6 @@ public class AutoCompleteFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        text = (TextView) view.findViewById(R.id.search_term);
 
         Log.d(TAG, "onViewCreated: textView found");
     }
@@ -106,11 +127,27 @@ public class AutoCompleteFragment extends Fragment {
 
         @Override
         public void onSearchTermChanged(String searchTerm) {
-            text.setText(searchTerm);
+
+            VasttrafikAPIBridge.getInstance().findLocations(searchTerm, new IVasttrafikAPIBridge.Listener() {
+                @Override
+                public void onSuccess(Object o) {
+                    try {
+                        List<ILocation> locations = (List<ILocation>) o;
+                        mAdapter.updateDataset(locations);
+                    } catch (Exception e) {
+                        Log.e(TAG, "onSuccess: Casting failed", e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Object o) {
+                }
+            });
+
         }
 
         @Override
-        public void onFinalChanged(ISearchField.Final finalValue) {
+        public void onFinalChanged(ILocation finalValue) {
 
         }
     }
@@ -134,8 +171,54 @@ public class AutoCompleteFragment extends Fragment {
 
 
 
-    public void setSearchTerm(final String searchTerm ) {
-        text.setText(searchTerm);
+    private class AutoCompleteAdapter extends RecyclerView.Adapter {
+        private List<ILocation> mDataset = new ArrayList<>();
 
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public TextView mTextView;
+            public ViewHolder(View itemView) {
+                super(itemView);
+
+                mTextView = (TextView) itemView.findViewById(R.id.autocomplete_title);
+            }
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_autocomplete, parent, false);
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int childLayoutPosition = mRecyclerView.getChildLayoutPosition(v);
+                    ILocation selected = mDataset.get(childLayoutPosition);
+                    SearchController.getInstance().getSearchFieldManager().getActiveField().setFinal(selected);
+                }
+            });
+            ViewHolder vh = new ViewHolder(v);
+            return vh;
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            ((ViewHolder) holder).mTextView.setText( mDataset.get(position).getName() );
+        }
+
+        @Override
+        public int getItemCount() {
+            return mDataset.size();
+        }
+
+
+        public void updateDataset( List<ILocation> newDataset ) {
+            mDataset = newDataset;
+            notifyDataSetChanged();
+
+
+        }
     }
+
+
+
+
+
 }

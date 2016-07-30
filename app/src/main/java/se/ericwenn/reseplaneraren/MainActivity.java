@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import se.ericwenn.reseplaneraren.controller.ISearchController;
 import se.ericwenn.reseplaneraren.controller.ISearchStateManager;
@@ -60,29 +62,28 @@ public class MainActivity extends FragmentActivity {
                     case INACTIVE:
                         newFragment = MapFragment.newInstance();
                         tag = "MapFragment";
+                        startFragment( tag, newFragment, newState.order() > oldState.order());
                         break;
                     case AUTOCOMPLETE:
                         newFragment = AutoCompleteFragment.newInstance();
                         tag = "AutoCompleteFragment";
+                        startFragment( tag, newFragment, newState.order() > oldState.order());
+                        FrameLayout fragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
+                        RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) fragmentContainer.getLayoutParams();
+                        p.addRule(RelativeLayout.BELOW, R.id.search);
+                        fragmentContainer.setLayoutParams(p);
                         break;
                     case RESULT:
-                        newFragment = AutoCompleteFragment.newInstance();
+                        newFragment = ResultFragment.newInstance();
                         tag = "ResultFragment";
+                        startFragment(tag, newFragment, newState.order() > oldState.order());
                         break;
                 }
                 if(newFragment == null) {
                     throw new IllegalArgumentException("State ["+newState+"] doesnt have a fragment connected to it");
                 }
 
-                if(getSupportFragmentManager().findFragmentByTag(tag) == null) {
-                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.fragment_container, newFragment, tag);
 
-                    if( newState.order() > oldState.order()) {
-                        ft.addToBackStack(null);
-                    }
-                    ft.commit();
-                }
 
 
             }
@@ -92,7 +93,17 @@ public class MainActivity extends FragmentActivity {
     }
 
 
+    private void startFragment( String tag, Fragment fragment, boolean addToBackStack) {
+        if(getSupportFragmentManager().findFragmentByTag(tag) == null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.fragment_container, fragment, tag);
 
+            if( addToBackStack ) {
+                ft.addToBackStack(null);
+            }
+            ft.commit();
+        }
+    }
 
     private ISearchController getSearchController() {
         return SearchController.getInstance();

@@ -5,6 +5,8 @@ import android.util.Log;
 import java.util.LinkedList;
 import java.util.List;
 
+import se.ericwenn.reseplaneraren.model.data.ILocation;
+
 /**
  * Created by ericwenn on 7/14/16.
  */
@@ -13,15 +15,26 @@ public class SearchField implements ISearchField {
     private static final String TAG = "SearchField";
     private String searchTerm = null;
     private List<IFieldListener> listeners = new LinkedList<>();
+    private ILocation finalValue = null;
 
     @Override
-    public void setFinal(Final finalValue) {
+    public void setFinal(ILocation finalValue) {
+        this.finalValue = finalValue;
+        Log.d(TAG, "setFinal() called with: " + "finalValue = [" + finalValue + "]");
+        for( IFieldListener l : listeners ) {
+            l.onFinalChanged( finalValue );
+        }
+    }
 
+    @Override
+    public ILocation getFinal() {
+        return finalValue;
     }
 
     @Override
     public void setSearchTerm(String searchTerm) {
 
+        setFinal( null );
         Log.d(TAG, "setSearchTerm() called with: " + "searchTerm = [" + searchTerm + "]");
         this.searchTerm = searchTerm;
 

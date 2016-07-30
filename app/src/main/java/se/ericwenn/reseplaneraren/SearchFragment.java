@@ -2,6 +2,7 @@ package se.ericwenn.reseplaneraren;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 
 import se.ericwenn.reseplaneraren.controller.ISearchField;
 import se.ericwenn.reseplaneraren.controller.SearchController;
+import se.ericwenn.reseplaneraren.model.data.ILocation;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -83,10 +85,43 @@ public class SearchFragment extends Fragment {
         SearchWatcher originSearchWatcher = new SearchWatcher( originField );
         originInput.addTextChangedListener( originSearchWatcher );
         originInput.setOnFocusChangeListener( originSearchWatcher );
+        originField.addFieldListener(new ISearchField.IFieldListener() {
+            @Override
+            public void onSearchTermChanged(String searchTerm) {
+
+            }
+
+            @Override
+            public void onFinalChanged(ILocation finalValue) {
+                if( finalValue != null) {
+                    originInput.setText(finalValue.getName());
+                    originInput.setTextColor(Color.parseColor("red"));
+                } else {
+                    originInput.setTextColor( Color.parseColor("black"));
+                }
+            }
+        });
 
         SearchWatcher destinationSearchWatcher = new SearchWatcher( destinationField );
         destinationInput.addTextChangedListener(destinationSearchWatcher );
         destinationInput.setOnFocusChangeListener(destinationSearchWatcher );
+        destinationField.addFieldListener(new ISearchField.IFieldListener() {
+            @Override
+            public void onSearchTermChanged(String searchTerm) {
+
+            }
+
+            @Override
+            public void onFinalChanged(ILocation finalValue) {
+                if( finalValue != null) {
+                    destinationInput.setText(finalValue.getName());
+                    destinationInput.setTextColor(Color.parseColor("red"));
+                } else {
+                    originInput.setTextColor( Color.parseColor("black"));
+                }
+
+            }
+        });
     }
 
     @Override
@@ -125,7 +160,9 @@ public class SearchFragment extends Fragment {
 
         @Override
         public void afterTextChanged(Editable s) {
-            field.setSearchTerm( s.toString() );
+            if (field.getFinal() == null || !field.getFinal().getName().equals(s.toString())) {
+                field.setSearchTerm( s.toString() );
+            }
         }
 
         @Override

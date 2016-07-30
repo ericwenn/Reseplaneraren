@@ -5,6 +5,8 @@ import android.util.Log;
 import java.util.LinkedList;
 import java.util.List;
 
+import se.ericwenn.reseplaneraren.model.data.ILocation;
+
 /**
  * Created by ericwenn on 7/14/16.
  */
@@ -17,6 +19,9 @@ public class SearchFieldManager implements ISearchFieldManager {
     private ISearchField originField = null;
     private ISearchField destinationField = null;
 
+    private boolean originIsFinal = false;
+    private boolean destinationIsFinal = false;
+
     private List<IActiveSearchFieldChangeListener> listeners = new LinkedList<>();
 
     public static synchronized SearchFieldManager getInstance() {
@@ -26,7 +31,9 @@ public class SearchFieldManager implements ISearchFieldManager {
         return instance;
     }
 
-    private SearchFieldManager() {}
+    private SearchFieldManager() {
+        Log.d(TAG, "SearchFieldManager init");
+    }
 
 
     @Override
@@ -73,6 +80,20 @@ public class SearchFieldManager implements ISearchFieldManager {
     public synchronized ISearchField getOriginField() {
         if( originField == null) {
             originField = new SearchField();
+
+            originField.addFieldListener(new ISearchField.IFieldListener() {
+                @Override
+                public void onSearchTermChanged(String searchTerm) {
+
+                }
+
+                @Override
+                public void onFinalChanged(ILocation finalValue) {
+                    originIsFinal = finalValue != null;
+                    SearchController.getInstance().getSearchDataManager().setOrigin(finalValue);
+                    tryToSearchTrip();
+                }
+            });
         }
 
         return originField;
@@ -82,8 +103,34 @@ public class SearchFieldManager implements ISearchFieldManager {
     public synchronized ISearchField getDestinationField() {
         if( destinationField == null) {
             destinationField = new SearchField();
+
+            destinationField.addFieldListener(new ISearchField.IFieldListener() {
+                @Override
+                public void onSearchTermChanged(String searchTerm) {
+
+                }
+
+                @Override
+                public void onFinalChanged(ILocation finalValue) {
+                    destinationIsFinal = finalValue != null;
+                    SearchController.getInstance().getSearchDataManager().setDestination(finalValue);
+
+                    tryToSearchTrip();
+                }
+            });
         }
 
         return destinationField;
+    }
+
+
+
+
+    private void tryToSearchTrip() {
+        Log.d(TAG, "tryToSearchTrip: Checking if both fields are final");
+        if( originIsFinal && destinationIsFinal ) {
+            Log.d(TAG, "tryToSearchTrip: Changing state");
+            SearchController.getInstance().getSearchStateManager().setState(ISearchStateManager.State.RESULT);
+        }
     }
 }

@@ -29,6 +29,6 @@ public class SearchController implements ISearchController {
 
     @Override
     public ISearchDataManager getSearchDataManager() {
-        return null;
+        return SearchDataManager.getInstance();
     }
 }
