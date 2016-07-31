@@ -64,17 +64,20 @@ public class ResultFragment extends Fragment {
 
     @Override
     public void onAttach(Context context) {
+
+        Log.d(TAG, "onAttach()");
         super.onAttach(context);
     }
 
     @Override
     public void onDetach() {
+        Log.d(TAG, "onDetach()");
         super.onDetach();
     }
 
-
     @Override
     public void onResume() {
+        Log.d(TAG, "onResume()");
         super.onResume();
 
         ILocation from = SearchController.getInstance().getSearchDataManager().getOrigin();
@@ -150,5 +153,7 @@ public class ResultFragment extends Fragment {
 
         }
     }
+
+
 
 }

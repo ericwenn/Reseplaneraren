@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,12 +54,14 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView()");
         super.onCreateView(inflater, container, savedInstanceState);
 
         View v = inflater.inflate(R.layout.fragment_search, container, false);
@@ -72,6 +75,7 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onStart() {
+        Log.d(TAG, "onStart()");
         super.onStart();
 
 
@@ -126,11 +130,13 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onAttach(Context context) {
+        Log.d(TAG, "onAttach()");
         super.onAttach(context);
     }
 
     @Override
     public void onDetach() {
+        Log.d(TAG, "onDetach()");
         super.onDetach();
     }
 
