@@ -19,8 +19,8 @@ import se.ericwenn.reseplaneraren.controller.ISearchField;
 import se.ericwenn.reseplaneraren.controller.ISearchFieldManager;
 import se.ericwenn.reseplaneraren.controller.SearchController;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
-import se.ericwenn.reseplaneraren.model.data.IVasttrafikAPIBridge;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
+import se.ericwenn.reseplaneraren.util.DataPromise;
 
 
 /**
@@ -148,21 +148,15 @@ public class AutoCompleteFragment extends Fragment {
             mFieldChangedListener = new ISearchField.IFieldListener() {
                 @Override
                 public void onSearchTermChanged(String searchTerm) {
-                    VasttrafikAPIBridge.getInstance().findLocations(searchTerm, new IVasttrafikAPIBridge.Listener() {
-                        @Override
-                        public void onSuccess(Object o) {
-                            try {
-                                List<ILocation> locations = (List<ILocation>) o;
-                                mAdapter.updateDataset(locations);
-                            } catch (Exception e) {
-                                Log.e(TAG, "onSuccess: Casting failed", e);
-                            }
-                        }
+                    DataPromise<List<ILocation>> promise = VasttrafikAPIBridge.getInstance().findLocations(searchTerm);
 
+                    promise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
                         @Override
-                        public void onFailure(Object o) {
+                        public void onResolve(List<ILocation> data) {
+                            mAdapter.updateDataset(data);
                         }
                     });
+
                 }
 
                 @Override

@@ -20,6 +20,8 @@ import se.ericwenn.reseplaneraren.services.IAuthorizer;
 import se.ericwenn.reseplaneraren.services.IResponseAction;
 import se.ericwenn.reseplaneraren.services.IRestClient;
 import se.ericwenn.reseplaneraren.services.VasttrafikAuthorizer;
+import se.ericwenn.reseplaneraren.util.DataPromise;
+import se.ericwenn.reseplaneraren.util.DataPromiseImpl;
 
 /**
  * Created by ericwenn on 7/20/16.
@@ -42,7 +44,11 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
     }
 
     @Override
-    public void getTrips(final ILocation from, final ILocation to, final Listener l) {
+    public DataPromise<List<ITrip>> getTrips(final ILocation from, final ILocation to) {
+
+        final DataPromiseImpl<List<ITrip>> promise = new DataPromiseImpl<>();
+
+
         VasttrafikAuthorizer.getInstance().authorize(getClient(), new IAuthorizer.AuthorizationListener() {
             @Override
             public void onAuthorized(IRestClient client) {
@@ -72,7 +78,7 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
                     public void onSuccess(String responseBody) {
 
                         Log.d(TAG, "onSuccess() called with: " + "responseBody = [" + responseBody + "]");
-                        List<Trip> trips;
+                        List<ITrip> trips;
 
                         try {
                             JSONObject o = new JSONObject(responseBody);
@@ -87,11 +93,11 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
                             trips = m.readValue(s, new TypeReference<List<Trip>>(){});
                             Log.d(TAG, "onSuccess: Fetched "+trips.size()+" trips from api.");
 
-                            l.onSuccess(trips);
+                            promise.resolveData(trips);
 
                         } catch (JSONException | JsonSyntaxException | IOException e) {
                             Log.e(TAG, "onSuccess: "+ responseBody, e);
-                            l.onFailure(null);
+                            promise.rejectData(e);
                             e.printStackTrace();
                         }
 
@@ -99,19 +105,25 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
 
                     @Override
                     public void onFailure(int statusCode, String responseBody) {
-                        l.onFailure(responseBody);
+                        promise.rejectData(new Exception(responseBody));
                     }
                 });
             }
         });
+
+        return promise;
     }
 
     @Override
-    public void findLocations(final String search, final Listener l) {
+    public DataPromise<List<ILocation>> findLocations(final String search) {
+
+        final DataPromiseImpl<List<ILocation>> promise = new DataPromiseImpl<>();
+
 
         VasttrafikAuthorizer.getInstance().authorize(getClient(), new IAuthorizer.AuthorizationListener() {
             @Override
             public void onAuthorized(IRestClient client) {
+
                 HashMap<String,String> p = new HashMap<>();
                 p.put("input", search);
                 p.put("format", "json");
@@ -120,24 +132,23 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
                     @Override
                     public void onSuccess(String responseBody) {
 
-                        List<Location> locations;
+                        List<ILocation> locations;
 
                         try {
                             JSONObject o = new JSONObject(responseBody);
                             String s = o.getJSONObject("LocationList").getString("StopLocation");
 
-
-
                             Gson g = new Gson();
 
                             locations = g.fromJson(s, new TypeToken<List<Location>>(){}.getType());
 
-                            Log.d(TAG, "onSuccess: "+locations.get(0).name);
-                            l.onSuccess(locations);
+                            Log.d(TAG, "onSuccess: Fetched "+locations.size()+" locations from api.");
+
+                            promise.resolveData(locations);
 
                         } catch (JSONException | JsonSyntaxException e) {
                             Log.e(TAG, "onSuccess: "+ responseBody, e);
-                            l.onFailure(null);
+                            promise.rejectData(e);
                         }
 
 
@@ -145,17 +156,19 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
 
                     @Override
                     public void onFailure(int statusCode, String responseBody) {
-                        l.onFailure(responseBody);
+                        promise.rejectData( new Exception(responseBody));
                     }
                 });
             }
         });
 
+        return promise;
+
 
     }
 
     @Override
-    public void findNearbyStops(double lat, double lon, Listener l) {
-
+    public DataPromise<List<ILocation>> findNearbyStops(double lat, double lon, Listener l) {
+        return new DataPromiseImpl<>();
     }
 }

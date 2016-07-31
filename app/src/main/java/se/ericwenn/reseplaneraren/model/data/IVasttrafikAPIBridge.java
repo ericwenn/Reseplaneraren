@@ -1,18 +1,19 @@
 package se.ericwenn.reseplaneraren.model.data;
 
+import java.util.List;
+
+import se.ericwenn.reseplaneraren.util.DataPromise;
+
 /**
  * Created by ericwenn on 7/19/16.
  */
 public interface IVasttrafikAPIBridge {
 
-    void getTrips( ILocation from, ILocation to, Listener l );
-    void findLocations( String search, Listener l);
-    void findNearbyStops(double lat, double lon, Listener l);
+    DataPromise<List<ILocation>> findLocations(String search);
 
+    DataPromise<List<ITrip>> getTrips( ILocation from, ILocation to );
 
-    interface Listener {
-        void onSuccess( Object o );
-        void onFailure( Object o );
-    }
+    DataPromise<List<ILocation>> findNearbyStops(double lat, double lon);
+
 
 }
