@@ -9,12 +9,21 @@ import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import java.util.List;
+
 import se.ericwenn.reseplaneraren.controller.ISearchController;
 import se.ericwenn.reseplaneraren.controller.ISearchStateManager;
 import se.ericwenn.reseplaneraren.controller.SearchController;
+import se.ericwenn.reseplaneraren.model.data.ILocation;
+import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
+import se.ericwenn.reseplaneraren.util.DataPromise;
+import se.ericwenn.reseplaneraren.views.map.IMapFragment;
+import se.ericwenn.reseplaneraren.views.map.MapFragment;
+import se.ericwenn.reseplaneraren.views.map.MapFragmentFactory;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements IMapFragment.MapFragmentController {
 
+    private static final String TAG = "MainActivity";
     private FragmentManager.OnBackStackChangedListener onBackStackChangedListener;
     private ISearchStateManager.StateListener onStateChangedListener;
 
@@ -32,8 +41,30 @@ public class MainActivity extends FragmentActivity {
 
 
         // TODO Make a function instead to handle this DRY
-        MapFragment acf = MapFragment.newInstance();
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, acf, "mapFragment").commit();
+
+        final IMapFragment mapFragment = MapFragmentFactory.create();
+
+        DataPromise<List<ILocation>> promise = VasttrafikAPIBridge.getInstance().findNearbyStops( 57.6906366, 11.9871087, 20000);
+        promise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
+            @Override
+            public void onResolve(List<ILocation> data) {
+                mapFragment.addMarkers( data );
+            }
+        });
+        promise.onReject(new DataPromise.RejectedHandler<List<ILocation>>() {
+            @Override
+            public void onReject(Exception e) {
+                DataPromise<List<ILocation>> promise = VasttrafikAPIBridge.getInstance().findNearbyStops( 57.6906366, 11.9871087, 2000);
+                promise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
+                    @Override
+                    public void onResolve(List<ILocation> data) {
+                        mapFragment.addMarkers( data );
+                    }
+                });
+            }
+        });
+
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, (Fragment) mapFragment, "mapFragment").commit();
 
         createBackStackListener();
         createSearchStateListener();
@@ -144,7 +175,9 @@ public class MainActivity extends FragmentActivity {
 
 
     private void startFragment( String tag, Fragment fragment, boolean addToBackStack) {
+        Log.d(TAG, "startFragment() called with: " + "tag = [" + tag + "], fragment = [" + fragment + "], addToBackStack = [" + addToBackStack + "]");
         if(getSupportFragmentManager().findFragmentByTag(tag) == null) {
+            Log.d(TAG, "startFragment: Fragment doesnt exist in manager");
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.fragment_container, fragment, tag);
 
@@ -160,8 +193,8 @@ public class MainActivity extends FragmentActivity {
     }
 
 
-
-
-
-
+    @Override
+    public void onLocationSelected(ILocation selected) {
+        SearchController.getInstance().getSearchFieldManager().getOriginField().setFinal( selected );
+    }
 }

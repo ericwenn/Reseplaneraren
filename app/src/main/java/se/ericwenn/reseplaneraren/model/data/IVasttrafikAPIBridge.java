@@ -14,6 +14,9 @@ public interface IVasttrafikAPIBridge {
     DataPromise<List<ITrip>> getTrips( ILocation from, ILocation to );
 
     DataPromise<List<ILocation>> findNearbyStops(double lat, double lon);
+    DataPromise<List<ILocation>> findNearbyStops(double lat, double lon, int maxDistance);
+
+
 
 
 }

@@ -10,6 +10,7 @@ public interface IRestClient {
 
 
     void addHeader( String key, String value);
+    void clearHeaders();
     /**
      * Send a GET request to the server
      * @param url Endpoint
