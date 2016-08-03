@@ -1,5 +1,6 @@
 package se.ericwenn.reseplaneraren.model.data;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -20,6 +21,9 @@ import se.ericwenn.reseplaneraren.services.IAuthorizer;
 import se.ericwenn.reseplaneraren.services.IResponseAction;
 import se.ericwenn.reseplaneraren.services.IRestClient;
 import se.ericwenn.reseplaneraren.services.VasttrafikAuthorizer;
+import se.ericwenn.reseplaneraren.util.DataPromise;
+import se.ericwenn.reseplaneraren.util.DataPromiseImpl;
+import se.ericwenn.reseplaneraren.util.Util;
 
 /**
  * Created by ericwenn on 7/20/16.
@@ -42,7 +46,11 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
     }
 
     @Override
-    public void getTrips(final ILocation from, final ILocation to, final Listener l) {
+    public DataPromise<List<ITrip>> getTrips(final ILocation from, final ILocation to) {
+
+        final DataPromiseImpl<List<ITrip>> promise = new DataPromiseImpl<>();
+
+
         VasttrafikAuthorizer.getInstance().authorize(getClient(), new IAuthorizer.AuthorizationListener() {
             @Override
             public void onAuthorized(IRestClient client) {
@@ -72,7 +80,7 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
                     public void onSuccess(String responseBody) {
 
                         Log.d(TAG, "onSuccess() called with: " + "responseBody = [" + responseBody + "]");
-                        List<Trip> trips;
+                        List<ITrip> trips;
 
                         try {
                             JSONObject o = new JSONObject(responseBody);
@@ -87,11 +95,11 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
                             trips = m.readValue(s, new TypeReference<List<Trip>>(){});
                             Log.d(TAG, "onSuccess: Fetched "+trips.size()+" trips from api.");
 
-                            l.onSuccess(trips);
+                            promise.resolveData(trips);
 
                         } catch (JSONException | JsonSyntaxException | IOException e) {
                             Log.e(TAG, "onSuccess: "+ responseBody, e);
-                            l.onFailure(null);
+                            promise.rejectData(e);
                             e.printStackTrace();
                         }
 
@@ -99,19 +107,25 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
 
                     @Override
                     public void onFailure(int statusCode, String responseBody) {
-                        l.onFailure(responseBody);
+                        promise.rejectData(new Exception(responseBody));
                     }
                 });
             }
         });
+
+        return promise;
     }
 
     @Override
-    public void findLocations(final String search, final Listener l) {
+    public DataPromise<List<ILocation>> findLocations(final String search) {
+
+        final DataPromiseImpl<List<ILocation>> promise = new DataPromiseImpl<>();
+
 
         VasttrafikAuthorizer.getInstance().authorize(getClient(), new IAuthorizer.AuthorizationListener() {
             @Override
             public void onAuthorized(IRestClient client) {
+
                 HashMap<String,String> p = new HashMap<>();
                 p.put("input", search);
                 p.put("format", "json");
@@ -120,24 +134,23 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
                     @Override
                     public void onSuccess(String responseBody) {
 
-                        List<Location> locations;
+                        List<ILocation> locations;
 
                         try {
                             JSONObject o = new JSONObject(responseBody);
                             String s = o.getJSONObject("LocationList").getString("StopLocation");
 
-
-
                             Gson g = new Gson();
 
                             locations = g.fromJson(s, new TypeToken<List<Location>>(){}.getType());
 
-                            Log.d(TAG, "onSuccess: "+locations.get(0).name);
-                            l.onSuccess(locations);
+                            Log.d(TAG, "onSuccess: Fetched "+locations.size()+" locations from api.");
+
+                            promise.resolveData(locations);
 
                         } catch (JSONException | JsonSyntaxException e) {
                             Log.e(TAG, "onSuccess: "+ responseBody, e);
-                            l.onFailure(null);
+                            promise.rejectData(e);
                         }
 
 
@@ -145,17 +158,84 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
 
                     @Override
                     public void onFailure(int statusCode, String responseBody) {
-                        l.onFailure(responseBody);
+                        promise.rejectData( new Exception(responseBody));
                     }
                 });
             }
         });
 
+        return promise;
+
 
     }
 
-    @Override
-    public void findNearbyStops(double lat, double lon, Listener l) {
 
+
+    @Override
+    public DataPromise<List<ILocation>> findNearbyStops(final double lat, final double lon) {
+        return findNearbyStops(lat, lon, 0);
+    }
+
+    @Override
+    public DataPromise<List<ILocation>> findNearbyStops(final double lat, final double lon, @Nullable final int maxDistance) {
+        if( maxDistance < 0 ) {
+            throw new IllegalArgumentException("maxDistance must be positive");
+        }
+        final DataPromiseImpl<List<ILocation>> promise = new DataPromiseImpl<>();
+
+        VasttrafikAuthorizer.getInstance().authorize(getClient(), new IAuthorizer.AuthorizationListener() {
+            @Override
+            public void onAuthorized(IRestClient client) {
+                Log.d(TAG, "onAuthorized() called with: " + "client = [" + client + "]");
+                HashMap<String, String> p = new HashMap<>();
+                p.put("originCoordLat", Double.toString(lat) );
+                p.put("originCoordLong", Double.toString(lon) );
+                if( maxDistance != 0) {
+                    p.put("maxDist", String.valueOf(maxDistance));
+                }
+                p.put("maxNo", "100");
+                p.put("format", "json");
+
+                getClient().get("bin/rest.exe/v2/location.nearbystops", p, new IResponseAction() {
+                    @Override
+                    public void onSuccess(String responseBody) {
+                        List<ILocation> locations;
+
+                        try {
+                            JSONObject o = new JSONObject(responseBody);
+                            String s = o.getJSONObject("LocationList").getString("StopLocation");
+
+                            Gson g = new Gson();
+
+                            locations = g.fromJson(s, new TypeToken<List<Location>>(){}.getType());
+
+                            // Locations returned contain same stop with different track, prefer only one per stop
+                            locations = Util.removeDuplicates(locations, new Util.DuplicateChecker<ILocation>() {
+                                @Override
+                                public Object uniqueAttribute(ILocation original) {
+                                    return original.getName();
+                                }
+                            });
+
+                            Log.d(TAG, "onSuccess: Fetched "+locations.size()+" locations from api.");
+
+                            promise.resolveData(locations);
+
+                        } catch (JSONException | JsonSyntaxException e) {
+                            Log.e(TAG, "onSuccess: "+ responseBody, e);
+                            promise.rejectData(e);
+                        }
+                        Log.d(TAG, "onSuccess() called with: " + "responseBody = [" + responseBody + "]");
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String responseBody) {
+                        Log.d(TAG, "onFailure() called with: " + "statusCode = [" + statusCode + "], responseBody = [" + responseBody + "]");
+                        promise.rejectData(new Exception());
+                    }
+                });
+            }
+        });
+        return promise;
     }
 }

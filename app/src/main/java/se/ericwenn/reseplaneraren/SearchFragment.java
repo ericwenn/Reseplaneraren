@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,12 +54,14 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView()");
         super.onCreateView(inflater, container, savedInstanceState);
 
         View v = inflater.inflate(R.layout.fragment_search, container, false);
@@ -72,66 +75,59 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onStart() {
+        Log.d(TAG, "onStart()");
         super.onStart();
 
 
         originField = SearchController.getInstance().getSearchFieldManager().getOriginField();
         destinationField = SearchController.getInstance().getSearchFieldManager().getDestinationField();
 
+        listenToField(originInput, originField);
+        listenToField(destinationInput, destinationField);
 
 
-
-
-        SearchWatcher originSearchWatcher = new SearchWatcher( originField );
-        originInput.addTextChangedListener( originSearchWatcher );
-        originInput.setOnFocusChangeListener( originSearchWatcher );
-        originField.addFieldListener(new ISearchField.IFieldListener() {
-            @Override
-            public void onSearchTermChanged(String searchTerm) {
-
-            }
-
-            @Override
-            public void onFinalChanged(ILocation finalValue) {
-                if( finalValue != null) {
-                    originInput.setText(finalValue.getName());
-                    originInput.setTextColor(Color.parseColor("red"));
-                } else {
-                    originInput.setTextColor( Color.parseColor("black"));
-                }
-            }
-        });
-
-        SearchWatcher destinationSearchWatcher = new SearchWatcher( destinationField );
-        destinationInput.addTextChangedListener(destinationSearchWatcher );
-        destinationInput.setOnFocusChangeListener(destinationSearchWatcher );
-        destinationField.addFieldListener(new ISearchField.IFieldListener() {
-            @Override
-            public void onSearchTermChanged(String searchTerm) {
-
-            }
-
-            @Override
-            public void onFinalChanged(ILocation finalValue) {
-                if( finalValue != null) {
-                    destinationInput.setText(finalValue.getName());
-                    destinationInput.setTextColor(Color.parseColor("red"));
-                } else {
-                    originInput.setTextColor( Color.parseColor("black"));
-                }
-
-            }
-        });
     }
 
     @Override
     public void onAttach(Context context) {
+        Log.d(TAG, "onAttach()");
         super.onAttach(context);
     }
 
     @Override
     public void onDetach() {
+        Log.d(TAG, "onDetach()");
         super.onDetach();
+    }
+
+
+
+
+    private void listenToField(final EditText textEditor, ISearchField textField ) {
+
+        SearchWatcher searchWatcher = new SearchWatcher( textField );
+
+        textEditor.addTextChangedListener( searchWatcher );
+        textEditor.setOnFocusChangeListener( searchWatcher );
+
+        textField.addFieldListener(new ISearchField.IFieldListener() {
+            @Override
+            public void onSearchTermChanged(String searchTerm) {
+
+            }
+
+            @Override
+            public void onFinalChanged(ILocation finalValue) {
+                Log.d(TAG, "onFinalChanged() called with: " + "finalValue = [" + finalValue + "]");
+
+                if( finalValue != null) {
+                    textEditor.setText(finalValue.getName());
+                    textEditor.setTextColor(Color.parseColor("red"));
+                } else {
+                    textEditor.setTextColor( Color.parseColor("black"));
+                }
+            }
+        });
     }
 
 
@@ -150,16 +146,17 @@ public class SearchFragment extends Fragment {
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+            Log.d(TAG, "beforeTextChanged() called with: " + "s = [" + s + "], start = [" + start + "], count = [" + count + "], after = [" + after + "]");
         }
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+            Log.d(TAG, "onTextChanged() called with: " + "s = [" + s + "], start = [" + start + "], before = [" + before + "], count = [" + count + "]");
         }
 
         @Override
         public void afterTextChanged(Editable s) {
+            Log.d(TAG, "afterTextChanged() called with: " + "s = [" + s + "]");
             if (field.getFinal() == null || !field.getFinal().getName().equals(s.toString())) {
                 field.setSearchTerm( s.toString() );
             }
@@ -167,6 +164,7 @@ public class SearchFragment extends Fragment {
 
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
+            Log.d(TAG, "onFocusChange() called with: " + "v = [" + v + "], hasFocus = [" + hasFocus + "]");
             if( hasFocus ) {
                 SearchController.getInstance().getSearchFieldManager().setActiveField(field);
             } else {

@@ -9,4 +9,5 @@ public interface ISearchController {
     ISearchFieldManager getSearchFieldManager();
     ISearchDataManager getSearchDataManager();
 
+
 }

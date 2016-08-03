@@ -3,7 +3,6 @@ package se.ericwenn.reseplaneraren;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,8 +19,8 @@ import se.ericwenn.reseplaneraren.controller.ISearchField;
 import se.ericwenn.reseplaneraren.controller.ISearchFieldManager;
 import se.ericwenn.reseplaneraren.controller.SearchController;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
-import se.ericwenn.reseplaneraren.model.data.IVasttrafikAPIBridge;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
+import se.ericwenn.reseplaneraren.util.DataPromise;
 
 
 /**
@@ -38,6 +37,9 @@ public class AutoCompleteFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private AutoCompleteAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+
+    private ISearchField.IFieldListener mFieldChangedListener;
+    private ISearchFieldManager.IActiveSearchFieldChangeListener mActiveSearchFieldChangeListener;
 
     public AutoCompleteFragment() {
         // Required empty public constructor
@@ -56,17 +58,117 @@ public class AutoCompleteFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        Log.d(TAG, "onAttach()");
+        super.onAttach(context);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView()");
+
         // Inflate the layout for this fragment
 
-        Log.d(TAG, "onCreateView: s");
         View v = inflater.inflate(R.layout.fragment_auto_complete, container, false);
+
+
+        setupRecyclerView(v);
+
+        return v;
+    }
+
+    @Override
+    public void onStart() {
+        Log.d(TAG, "onStart()");
+        super.onStart();
+
+        createFieldChangedListener();
+        createActiveFieldChangedListener();
+
+    }
+
+    @Override
+    public void onResume() {
+        Log.d(TAG, "onResume()");
+        super.onResume();
+
+        listenToActiveSearchFieldChanged();
+
+
+        // TODO might be smelly
+        if( SearchController.getInstance().getSearchFieldManager().getActiveField() != null) {
+            SearchController.getInstance().getSearchFieldManager().getActiveField().addFieldListener(mFieldChangedListener);
+            mFieldChangedListener.onSearchTermChanged(SearchController.getInstance().getSearchFieldManager().getActiveField().getSearchTerm());
+        }
+
+    }
+
+    @Override
+    public void onPause() {
+        Log.d(TAG, "onPause()");
+        super.onPause();
+
+        stopListeningToActiveSearchFieldChanged();
+    }
+
+
+
+    private void createActiveFieldChangedListener() {
+        mActiveSearchFieldChangeListener = new ISearchFieldManager.IActiveSearchFieldChangeListener() {
+            @Override
+            public void onChange(ISearchField oldField, ISearchField newField) {
+                if (oldField != null) {
+                    oldField.removeFieldListener(mFieldChangedListener);
+                }
+                newField.addFieldListener(mFieldChangedListener);
+                // TODO might be unnecessary or smelly
+                mFieldChangedListener.onSearchTermChanged(newField.getSearchTerm());
+            }
+        };
+    }
+
+    private void listenToActiveSearchFieldChanged() {
+        SearchController.getInstance().getSearchFieldManager().addActiveSearchFieldChangeListener(mActiveSearchFieldChangeListener);
+    }
+
+    private void stopListeningToActiveSearchFieldChanged() {
+        SearchController.getInstance().getSearchFieldManager().removeActiveSearchFieldChangeListener(mActiveSearchFieldChangeListener);
+    }
+
+
+
+    private void createFieldChangedListener() {
+        if( mFieldChangedListener == null) {
+            mFieldChangedListener = new ISearchField.IFieldListener() {
+                @Override
+                public void onSearchTermChanged(String searchTerm) {
+                    DataPromise<List<ILocation>> promise = VasttrafikAPIBridge.getInstance().findLocations(searchTerm);
+
+                    promise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
+                        @Override
+                        public void onResolve(List<ILocation> data) {
+                            mAdapter.updateDataset(data);
+                        }
+                    });
+
+                }
+
+                @Override
+                public void onFinalChanged(ILocation finalValue) {
+
+                }
+            };
+        }
+    }
+
+    private void setupRecyclerView(View v) {
+
         mRecyclerView = (RecyclerView) v.findViewById(R.id.results_recyclerview);
         mRecyclerView.setHasFixedSize(true);
 
@@ -75,82 +177,15 @@ public class AutoCompleteFragment extends Fragment {
 
         mAdapter = new AutoCompleteAdapter();
         mRecyclerView.setAdapter(mAdapter);
-
-
-
-
-        return v;
     }
 
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
 
-        Log.d(TAG, "onViewCreated: textView found");
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        Log.d(TAG, "onAttach() called with: " + "context = [" + context + "]");
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        final FieldListener listener = new FieldListener();
-
-        Log.d(TAG, "onResume() called with: " + "");
-
-        SearchController.getInstance().getSearchFieldManager().addActiveSearchFieldChangeListener(new ISearchFieldManager.IActiveSearchFieldChangeListener() {
-            @Override
-            public void onChange(ISearchField oldField, ISearchField newField) {
-                if( oldField != null) {
-                    oldField.removeFieldListener(listener);
-                }
-                newField.addFieldListener(listener);
-                listener.onSearchTermChanged( newField.getSearchTerm() );
-            }
-        });
-        if( SearchController.getInstance().getSearchFieldManager().getActiveField() != null) {
-            SearchController.getInstance().getSearchFieldManager().getActiveField().addFieldListener(listener);
-            listener.onSearchTermChanged(SearchController.getInstance().getSearchFieldManager().getActiveField().getSearchTerm());
-        }
-
-    }
 
 
-    class FieldListener implements ISearchField.IFieldListener {
 
-        @Override
-        public void onSearchTermChanged(String searchTerm) {
 
-            VasttrafikAPIBridge.getInstance().findLocations(searchTerm, new IVasttrafikAPIBridge.Listener() {
-                @Override
-                public void onSuccess(Object o) {
-                    try {
-                        List<ILocation> locations = (List<ILocation>) o;
-                        mAdapter.updateDataset(locations);
-                    } catch (Exception e) {
-                        Log.e(TAG, "onSuccess: Casting failed", e);
-                    }
-                }
-
-                @Override
-                public void onFailure(Object o) {
-                }
-            });
-
-        }
-
-        @Override
-        public void onFinalChanged(ILocation finalValue) {
-
-        }
-    }
 
     /**
      * This interface must be implemented by activities that contain this
