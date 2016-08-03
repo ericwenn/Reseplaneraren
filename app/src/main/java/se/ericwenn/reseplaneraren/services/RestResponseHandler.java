@@ -27,7 +27,11 @@ public class RestResponseHandler extends AsyncHttpResponseHandler implements Res
         String responseString;
 
 
-        responseString = new String(responseBody);
+        if( responseBody != null ) {
+            responseString = new String(responseBody);
+        } else {
+            responseString = "";
+        }
 
 
         this.action.onFailure(statusCode, responseString);

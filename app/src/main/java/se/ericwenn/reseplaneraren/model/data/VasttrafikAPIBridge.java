@@ -1,5 +1,6 @@
 package se.ericwenn.reseplaneraren.model.data;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -46,7 +47,15 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
     }
 
     @Override
-    public DataPromise<List<ITrip>> getTrips(final ILocation from, final ILocation to) {
+    public DataPromise<List<ITrip>> getTrips(@NonNull final ILocation from, @NonNull  final ILocation to) {
+
+
+        if( from == null ) {
+            throw new IllegalArgumentException("Origin cant be null");
+        }
+        if( to == null ) {
+            throw new IllegalArgumentException("Destination cant be null");
+        }
 
         final DataPromiseImpl<List<ITrip>> promise = new DataPromiseImpl<>();
 

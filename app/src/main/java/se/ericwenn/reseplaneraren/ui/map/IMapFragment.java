@@ -1,4 +1,4 @@
-package se.ericwenn.reseplaneraren.views.map;
+package se.ericwenn.reseplaneraren.ui.map;
 
 import java.util.List;
 
@@ -18,9 +18,5 @@ public interface IMapFragment {
 
     void setZoom( float zlevel );
 
-
-    public interface MapFragmentController {
-        public void onLocationSelected( ILocation selected );
-    }
 
 }
