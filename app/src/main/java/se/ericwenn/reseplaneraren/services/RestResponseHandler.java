@@ -1,5 +1,7 @@
 package se.ericwenn.reseplaneraren.services;
 
+import android.util.Log;
+
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.ResponseHandlerInterface;
 
@@ -19,6 +21,7 @@ public class RestResponseHandler extends AsyncHttpResponseHandler implements Res
 
     @Override
     public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+        Log.d(TAG, "onSuccess() called with: " + "statusCode = [" + statusCode + "], headers = [" + headers + "], responseBody = [" + responseBody + "]");
         this.action.onSuccess(new String(responseBody));
     }
 
@@ -26,9 +29,13 @@ public class RestResponseHandler extends AsyncHttpResponseHandler implements Res
     public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
         String responseString;
 
+        Log.d(TAG, "onFailure() called with: " + "statusCode = [" + statusCode + "], headers = [" + headers + "], responseBody = [" + responseBody + "], error = [" + error + "]");
 
-        responseString = new String(responseBody);
-
+        if(responseBody == null || responseBody.length == 0){
+            responseString = "";
+        } else{
+            responseString = new String(responseBody);
+        }
 
         this.action.onFailure(statusCode, responseString);
     }

@@ -15,12 +15,9 @@ public class VasttrafikAuthorizer implements IAuthorizer {
 
     private static final String key = "7hXzaFPPYvLCxD0IqnPNa3to5aca";
     private static final String secret = "IGijc3btOsBlAVMgnnYEovUHmNAa";
-    private static final String TAG = "VasttrafikAuthorizer";
 
     private static VasttrafikAuthorizer instance = null;
     private VasttrafikToken token = null;
-
-
 
 
 
@@ -57,10 +54,8 @@ public class VasttrafikAuthorizer implements IAuthorizer {
     @Override
     public void authorize(IRestClient client, AuthorizationListener l) {
         if( token == null || !token.isValid()) {
-            Log.d(TAG, "authorize: Token is not valid, authorizing....");
             getToken(client, l);
         } else {
-            Log.d(TAG, "authorize: Token is valid");
             client.addHeader("Authorization", "Bearer "+token.getToken());
             l.onAuthorized(client);
         }
@@ -87,6 +82,7 @@ public class VasttrafikAuthorizer implements IAuthorizer {
         // https://api.vasttrafik.se/token
         client.post("token", p, new IResponseAction() {
 
+            public static final String TAG = "RestClientAuth";
 
             @Override
             public void onSuccess(String responseBody) {
@@ -95,9 +91,7 @@ public class VasttrafikAuthorizer implements IAuthorizer {
                 token = g.fromJson(responseBody, VasttrafikToken.class);
                 token.calculateExpiresIn();
 
-                client.clearHeaders();
                 client.addHeader("Authorization", "Bearer "+token.getToken());
-
 
                 Log.d(TAG, "onSuccess: Token=["+token.getToken()+"]");
                 l.onAuthorized(client);
