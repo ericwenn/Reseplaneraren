@@ -1,4 +1,4 @@
-package se.ericwenn.reseplaneraren.views.map;
+package se.ericwenn.reseplaneraren.ui.map;
 
 
 import android.content.Context;
@@ -27,6 +27,7 @@ import java.util.List;
 
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
+import se.ericwenn.reseplaneraren.ui.FragmentController;
 
 
 /**
@@ -39,8 +40,7 @@ public class MapFragment extends Fragment implements IMapFragment {
 
     private static final String TAG = "MapFragment";
     private GoogleMap mMap;
-    private SupportMapFragment mapFragment;
-    private MapFragmentController mActivity;
+    private FragmentController mController;
 
 
     private BiMap<ILocation, Marker> mMarkers = HashBiMap.create();
@@ -56,8 +56,7 @@ public class MapFragment extends Fragment implements IMapFragment {
      * @return A new instance of fragment MapFragment.
      */
     public static MapFragment newInstance() {
-        MapFragment fragment = new MapFragment();
-        return fragment;
+        return new MapFragment();
     }
 
 
@@ -65,9 +64,9 @@ public class MapFragment extends Fragment implements IMapFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mActivity = (MapFragmentController) context;
+            mController = (FragmentController) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement MapFragmentController");
+            throw new ClassCastException(context.toString() + " must implement FragmentController");
         }
 
     }
@@ -93,7 +92,7 @@ public class MapFragment extends Fragment implements IMapFragment {
         Log.d(TAG, "onViewCreated()");
         super.onViewCreated(view, savedInstanceState);
         FragmentManager fm = getChildFragmentManager();
-        mapFragment = (SupportMapFragment) fm.findFragmentByTag("mapFragment");
+        SupportMapFragment mapFragment = (SupportMapFragment) fm.findFragmentByTag("mapFragment");
         if (mapFragment == null) {
             mapFragment = new SupportMapFragment();
             FragmentTransaction ft = fm.beginTransaction();
@@ -123,7 +122,7 @@ public class MapFragment extends Fragment implements IMapFragment {
                         Log.d(TAG, "onMarkerClick() called with: " + "marker = [" + marker + "]");
                         ILocation loc = mMarkers.inverse().get(marker);
                         if( loc != null) {
-                            mActivity.onLocationSelected( loc );
+                            mController.onLocationSelected( loc, FragmentController.Field.ORIGIN);
                         }
                         return true;
                     }
@@ -146,7 +145,7 @@ public class MapFragment extends Fragment implements IMapFragment {
     public void onDetach() {
         Log.d(TAG, "onDetach()");
         super.onDetach();
-        mActivity = null;
+        mController = null;
     }
 
 
@@ -159,6 +158,7 @@ public class MapFragment extends Fragment implements IMapFragment {
 
     @Override
     public void addMarkers(List<ILocation> markers) {
+        // Necessary to not get a nullpointer TODO
         while( mMap == null) {
 
         }

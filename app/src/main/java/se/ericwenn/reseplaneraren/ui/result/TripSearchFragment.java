@@ -1,4 +1,4 @@
-package se.ericwenn.reseplaneraren;
+package se.ericwenn.reseplaneraren.ui.result;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,18 +14,23 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.ericwenn.reseplaneraren.controller.SearchController;
+import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
 import se.ericwenn.reseplaneraren.model.data.ITrip;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
+import se.ericwenn.reseplaneraren.ui.FragmentController;
 import se.ericwenn.reseplaneraren.util.DataPromise;
 
-public class ResultFragment extends Fragment {
+public class TripSearchFragment extends Fragment implements ITripSearchFragment {
 
-    private static final String TAG = "ResultFragment";
+    private static final String TAG = "TripSearchFragment";
     private ResultAdapter mAdapter;
+    private ILocation originLocation;
+    private ILocation destinationLocation;
 
-    public ResultFragment() {
+    private FragmentController mController;
+
+    public TripSearchFragment() {
         // Required empty public constructor
     }
 
@@ -33,15 +38,17 @@ public class ResultFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment ResultFragment.
+     * @return A new instance of fragment TripSearchFragment.
      */
-    public static ResultFragment newInstance() {
-        return new ResultFragment();
+    public static TripSearchFragment newInstance() {
+        return new TripSearchFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mAdapter = new ResultAdapter();
+
     }
 
     @Override
@@ -55,7 +62,6 @@ public class ResultFragment extends Fragment {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new ResultAdapter();
         mRecyclerView.setAdapter(mAdapter);
         return v;
     }
@@ -67,6 +73,12 @@ public class ResultFragment extends Fragment {
 
         Log.d(TAG, "onAttach()");
         super.onAttach(context);
+
+        try {
+            mController = (FragmentController) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement FragmentController");
+        }
     }
 
     @Override
@@ -79,20 +91,33 @@ public class ResultFragment extends Fragment {
     public void onResume() {
         Log.d(TAG, "onResume()");
         super.onResume();
+    }
 
-        ILocation from = SearchController.getInstance().getSearchDataManager().getOrigin();
-        ILocation to = SearchController.getInstance().getSearchDataManager().getDestination();
+    @Override
+    public void changeRoute(ILocation origin, ILocation destination) {
 
+        originLocation = origin;
+        destinationLocation = destination;
+        performSearch();
+    }
+
+
+    private void performSearch() {
+        if( originLocation == null || destinationLocation == null) {
+            throw new IllegalStateException("originLocation and destinationLocation must be set");
+        }
+        performSearch(originLocation, destinationLocation);
+    }
+    private void performSearch( ILocation from, ILocation to) {
         DataPromise<List<ITrip>> promise = VasttrafikAPIBridge.getInstance().getTrips(from, to);
-
         promise.onResolve(new DataPromise.ResolvedHandler<List<ITrip>>() {
             @Override
             public void onResolve(List<ITrip> data) {
                 mAdapter.updateDataset(data);
             }
         });
-    }
 
+    }
 
 
     private class ResultAdapter extends RecyclerView.Adapter {
