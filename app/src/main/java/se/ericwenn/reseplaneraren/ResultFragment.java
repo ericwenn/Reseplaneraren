@@ -17,8 +17,8 @@ import java.util.List;
 import se.ericwenn.reseplaneraren.controller.SearchController;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
 import se.ericwenn.reseplaneraren.model.data.ITrip;
+import se.ericwenn.reseplaneraren.model.data.IVasttrafikAPIBridge;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
-import se.ericwenn.reseplaneraren.util.DataPromise;
 
 public class ResultFragment extends Fragment {
 
@@ -64,31 +64,37 @@ public class ResultFragment extends Fragment {
 
     @Override
     public void onAttach(Context context) {
-
-        Log.d(TAG, "onAttach()");
         super.onAttach(context);
     }
 
     @Override
     public void onDetach() {
-        Log.d(TAG, "onDetach()");
         super.onDetach();
     }
 
+
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume()");
         super.onResume();
 
         ILocation from = SearchController.getInstance().getSearchDataManager().getOrigin();
         ILocation to = SearchController.getInstance().getSearchDataManager().getDestination();
 
-        DataPromise<List<ITrip>> promise = VasttrafikAPIBridge.getInstance().getTrips(from, to);
-
-        promise.onResolve(new DataPromise.ResolvedHandler<List<ITrip>>() {
+        VasttrafikAPIBridge.getInstance().getTrips(from, to, new IVasttrafikAPIBridge.Listener() {
             @Override
-            public void onResolve(List<ITrip> data) {
-                mAdapter.updateDataset(data);
+            public void onSuccess(Object o) {
+
+                try {
+                    List<ITrip> trips = (List<ITrip>) o;
+                    mAdapter.updateDataset(trips);
+                } catch (Exception e) {
+                    Log.e(TAG, "onSuccess: Casting failed", e);
+                }
+            }
+
+            @Override
+            public void onFailure(Object o) {
+
             }
         });
     }
@@ -144,7 +150,5 @@ public class ResultFragment extends Fragment {
 
         }
     }
-
-
 
 }
