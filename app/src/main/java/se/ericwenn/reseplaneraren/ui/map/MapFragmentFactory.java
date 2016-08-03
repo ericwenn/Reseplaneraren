@@ -1,4 +1,4 @@
-package se.ericwenn.reseplaneraren.views.map;
+package se.ericwenn.reseplaneraren.ui.map;
 
 import android.util.Log;
 
