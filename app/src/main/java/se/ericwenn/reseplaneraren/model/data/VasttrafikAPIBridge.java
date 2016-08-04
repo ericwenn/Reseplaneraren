@@ -15,8 +15,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import se.ericwenn.reseplaneraren.services.IAuthorizer;
 import se.ericwenn.reseplaneraren.services.IResponseAction;
@@ -88,7 +91,6 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
                     @Override
                     public void onSuccess(String responseBody) {
 
-                        Log.d(TAG, "onSuccess() called with: " + "responseBody = [" + responseBody + "]");
                         List<ITrip> trips;
 
                         try {
@@ -234,7 +236,6 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
                             Log.e(TAG, "onSuccess: "+ responseBody, e);
                             promise.rejectData(e);
                         }
-                        Log.d(TAG, "onSuccess() called with: " + "responseBody = [" + responseBody + "]");
                     }
 
                     @Override
@@ -245,6 +246,64 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
                 });
             }
         });
+        return promise;
+    }
+
+
+
+
+    public DataPromise<List<IDeparture>> getDepartures(final ILocation l) {
+        final DataPromiseImpl<List<IDeparture>> promise = new DataPromiseImpl<>();
+
+        VasttrafikAuthorizer.getInstance().authorize(getClient(), new IAuthorizer.AuthorizationListener() {
+            @Override
+            public void onAuthorized(IRestClient client) {
+                HashMap<String, String> p = new HashMap<>();
+
+                p.put("id", l.getID() );
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                SimpleDateFormat stf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                p.put("date", sdf.format( new Date() ));
+                p.put("time", stf.format( new Date() ));
+                p.put("format", "json");
+                p.put("timespan", "180");
+                p.put("maxDeparturesPerLine", "1");
+
+                getClient().get("bin/rest.exe/v2/departureBoard", p, new IResponseAction() {
+                    @Override
+                    public void onSuccess(String responseBody) {
+                        List<IDeparture> departures;
+
+                        try {
+                            JSONObject o = new JSONObject(responseBody);
+                            String s = o.getJSONObject("DepartureBoard").getString("Departure");
+
+                            Gson g = new Gson();
+
+                            departures = g.fromJson(s, new TypeToken<List<Departure>>(){}.getType());
+
+
+                            Log.d(TAG, "onSuccess: Fetched "+departures.size()+" departures from api.");
+
+                            promise.resolveData(departures);
+
+                        } catch (JSONException | JsonSyntaxException e) {
+                            Log.e(TAG, "onSuccess: "+ responseBody, e);
+                            promise.rejectData(e);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String responseBody) {
+                        Log.d(TAG, "onFailure() called with: " + "statusCode = [" + statusCode + "], responseBody = [" + responseBody + "]");
+                        promise.rejectData(new Exception());
+                    }
+                });
+            }
+        });
+
+
         return promise;
     }
 }
