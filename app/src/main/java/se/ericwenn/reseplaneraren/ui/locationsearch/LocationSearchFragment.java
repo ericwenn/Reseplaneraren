@@ -72,7 +72,7 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
 
         // Inflate the layout for this fragment
 
-        View v = inflater.inflate(R.layout.fragment_auto_complete, container, false);
+        View v = inflater.inflate(R.layout.bottomsheet_locationsearch, container, false);
 
 
         setupRecyclerView(v);
@@ -103,7 +103,7 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
 
     private void setupRecyclerView(View v) {
 
-        mRecyclerView = (RecyclerView) v.findViewById(R.id.results_recyclerview);
+        mRecyclerView = (RecyclerView) v.findViewById(R.id.location_results);
         mRecyclerView.setHasFixedSize(true);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());

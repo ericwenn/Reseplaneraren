@@ -1,11 +1,13 @@
 package se.ericwenn.reseplaneraren.ui;
 
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.widget.FrameLayout;
 
 import java.util.List;
 
@@ -34,6 +36,8 @@ public class MainActivity extends FragmentActivity implements
     private IMapFragment mMapFragment;
     private ITripSearchFragment mTripSearchFragment;
 
+    private BottomSheetBehavior mBottomSheetBehavior;
+
 
 
 
@@ -58,6 +62,16 @@ public class MainActivity extends FragmentActivity implements
         mTripSearchFragment = TripSearchFragmentFactory.create();
 
 
+        FrameLayout bottomSheetFrame = (FrameLayout) findViewById(R.id.bottomsheet_frame);
+
+        FragmentManager supportFragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
+        fragmentTransaction.add( R.id.bottomsheet_frame, (Fragment) mLocationSearchFragment, null);
+        fragmentTransaction.commit();
+
+
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetFrame);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
         mFragmentSwitcher.showFragment( (Fragment) mMapFragment );
 
@@ -124,8 +138,9 @@ public class MainActivity extends FragmentActivity implements
 
         updateCurrentLocation(null, f);
 
-        mFragmentSwitcher.showFragment((Fragment) mLocationSearchFragment);
-        mLocationSearchFragment.changeSearchTerm( searchTerm, f );
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        //mFragmentSwitcher.showFragment((Fragment) mLocationSearchFragment);
+        //mLocationSearchFragment.changeSearchTerm( searchTerm, f );
 
     }
 
