@@ -11,6 +11,7 @@ public interface FragmentController {
     public void onSearchTermChanged( String searchTerm, Field f);
     public void onLocationSelected(ILocation l, Field f);
     public void onTripSelected( ITrip t);
+    public void starLocation( ILocation l);
 
 
     enum Field {

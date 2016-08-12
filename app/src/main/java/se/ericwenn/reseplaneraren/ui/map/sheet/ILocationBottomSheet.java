@@ -14,9 +14,4 @@ public interface ILocationBottomSheet {
     String getTag();
 
 
-    interface LocationBottomSheetController {
-        void travelFromHere( ILocation l);
-        void travelToHere( ILocation l );
-        void starLocation( ILocation l );
-    }
 }

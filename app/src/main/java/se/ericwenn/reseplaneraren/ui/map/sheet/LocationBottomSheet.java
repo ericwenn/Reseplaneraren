@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.IDeparture;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
+import se.ericwenn.reseplaneraren.ui.FragmentController;
 import se.ericwenn.reseplaneraren.util.DataPromise;
 
 /**
@@ -31,12 +33,18 @@ public class LocationBottomSheet extends BottomSheetDialogFragment implements IL
     private static final String TAG = "LocationBottomSheet";
     private ILocation mLocation;
     private DepartureAdapter mAdapter;
+    private FragmentController mController;
 
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         Log.d(TAG, "onAttach()");
+        try {
+            mController = (FragmentController) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException( activity.toString() + " must implement FragmentController");
+        }
     }
 
 
@@ -73,6 +81,36 @@ public class LocationBottomSheet extends BottomSheetDialogFragment implements IL
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         mRecyclerView.setAdapter(mAdapter);
+
+
+        LinearLayout mTravelFromHereButton = (LinearLayout) contentView.findViewById(R.id.travel_from_here);
+        LinearLayout mTravelToHereButton = (LinearLayout) contentView.findViewById(R.id.travel_to_here);
+        LinearLayout starLocationButton = (LinearLayout) contentView.findViewById(R.id.star);
+
+        mTravelFromHereButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mController.onLocationSelected( mLocation, FragmentController.Field.ORIGIN);
+                dismiss();
+
+            }
+        });
+
+        mTravelToHereButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mController.onLocationSelected( mLocation, FragmentController.Field.DESTINATION);
+                dismiss();
+            }
+        });
+
+        starLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mController.starLocation( mLocation );
+            }
+        });
+
 
 
         Log.d(TAG, "setupDialog: mLocationName = ["+mLocationName+"]");

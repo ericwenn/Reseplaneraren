@@ -4,7 +4,6 @@ package se.ericwenn.reseplaneraren.ui.map;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -210,8 +209,5 @@ public class MapFragment extends Fragment implements IMapFragment {
         CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(zlevel);
         mMap.moveCamera(cameraUpdate);
     }
-
-
-
 
 }
