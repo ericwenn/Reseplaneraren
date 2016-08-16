@@ -30,7 +30,6 @@ public class MainActivity extends FragmentActivity implements
         FragmentController {
 
     private static final String TAG = "MainActivity";
-    private FragmentManager.OnBackStackChangedListener onBackStackChangedListener;
 
     private FragmentSwitcher mFragmentSwitcher;
     private ISearchFragment mSearchFragment;
@@ -193,7 +192,10 @@ public class MainActivity extends FragmentActivity implements
         Log.d(TAG, "onTripSelected() called with: " + "t = [" + t + "]");
     }
 
-
+    @Override
+    public void starLocation( ILocation l) {
+        Log.d(TAG, "starLocation() called with: " + "");
+    }
 
 
     private class FragmentSwitcher {
