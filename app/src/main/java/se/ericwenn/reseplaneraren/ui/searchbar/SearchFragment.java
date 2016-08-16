@@ -139,7 +139,11 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
     @Override
     public void focusField(FragmentController.Field f) {
-
+        if( f == FragmentController.Field.ORIGIN ) {
+            originInput.requestFocus();
+        } else {
+            destinationInput.requestFocus();
+        }
     }
 
     @Override

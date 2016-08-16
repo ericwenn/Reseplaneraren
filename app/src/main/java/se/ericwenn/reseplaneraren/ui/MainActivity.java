@@ -1,11 +1,15 @@
 package se.ericwenn.reseplaneraren.ui;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import java.util.List;
 
@@ -33,6 +37,8 @@ public class MainActivity extends FragmentActivity implements
     private IMapFragment mMapFragment;
     private ITripSearchFragment mTripSearchFragment;
 
+    private BottomSheetBehavior mBottomSheetBehavior;
+
 
 
 
@@ -57,6 +63,29 @@ public class MainActivity extends FragmentActivity implements
         mTripSearchFragment = TripSearchFragmentFactory.create();
 
 
+        final FrameLayout bottomSheetFrame = (FrameLayout) findViewById(R.id.bottomsheet_frame);
+
+        FragmentManager supportFragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
+        fragmentTransaction.add( R.id.bottomsheet_frame, (Fragment) mLocationSearchFragment, null);
+        fragmentTransaction.commit();
+
+
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetFrame);
+        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if( newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    bottomSheetFrame.requestLayout();
+                    bottomSheetFrame.invalidate();
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
 
         mFragmentSwitcher.showFragment( (Fragment) mMapFragment );
 
@@ -123,7 +152,8 @@ public class MainActivity extends FragmentActivity implements
 
         updateCurrentLocation(null, f);
 
-        mFragmentSwitcher.showFragment((Fragment) mLocationSearchFragment);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        //mFragmentSwitcher.showFragment((Fragment) mLocationSearchFragment);
         mLocationSearchFragment.changeSearchTerm( searchTerm, f );
 
     }
@@ -142,6 +172,9 @@ public class MainActivity extends FragmentActivity implements
             Log.d(TAG, "onLocationSelected: Both origin and destination is set, starting search");
             mFragmentSwitcher.showFragment((Fragment) mTripSearchFragment);
             mTripSearchFragment.changeRoute( mOrigin, mDestination );
+            mBottomSheetBehavior.setState( BottomSheetBehavior.STATE_COLLAPSED );
+        } else if( f == Field.ORIGIN ) {
+            mSearchFragment.focusField( Field.DESTINATION );
         }
 
     }

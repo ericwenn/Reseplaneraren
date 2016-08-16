@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="60dp">
+    android:layout_height="wrap_content"
+    android:background="#fff">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
         android:id="@+id/autocomplete_title"
-        android:text="[name]"
-        android:layout_marginStart="16dp"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="16dp" />
-
-</RelativeLayout>
+        android:text="@string/fallback_stopname"
+        android:paddingStart="16dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:paddingEnd="16dp"
+        android:paddingRight="16dp" />
+</LinearLayout>
