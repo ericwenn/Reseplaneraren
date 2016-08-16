@@ -28,6 +28,8 @@ import java.util.List;
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
 import se.ericwenn.reseplaneraren.ui.FragmentController;
+import se.ericwenn.reseplaneraren.ui.map.sheet.ILocationBottomSheet;
+import se.ericwenn.reseplaneraren.ui.map.sheet.LocationBottomSheetFactory;
 
 
 /**
@@ -41,6 +43,8 @@ public class MapFragment extends Fragment implements IMapFragment {
     private static final String TAG = "MapFragment";
     private GoogleMap mMap;
     private FragmentController mController;
+
+    private ILocationBottomSheet mBottomSheet;
 
 
     private BiMap<ILocation, Marker> mMarkers = HashBiMap.create();
@@ -91,6 +95,10 @@ public class MapFragment extends Fragment implements IMapFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onViewCreated()");
         super.onViewCreated(view, savedInstanceState);
+
+
+        mBottomSheet = LocationBottomSheetFactory.create();
+
         FragmentManager fm = getChildFragmentManager();
         SupportMapFragment mapFragment = (SupportMapFragment) fm.findFragmentByTag("mapFragment");
         if (mapFragment == null) {
@@ -121,9 +129,10 @@ public class MapFragment extends Fragment implements IMapFragment {
                     public boolean onMarkerClick(Marker marker) {
                         Log.d(TAG, "onMarkerClick() called with: " + "marker = [" + marker + "]");
                         ILocation loc = mMarkers.inverse().get(marker);
-                        if( loc != null) {
-                            mController.onLocationSelected( loc, FragmentController.Field.ORIGIN);
-                        }
+
+                        mBottomSheet.setLocation( loc );
+                        mBottomSheet.show( getFragmentManager(), mBottomSheet.getTag() );
+
                         return true;
                     }
                 });
@@ -132,14 +141,21 @@ public class MapFragment extends Fragment implements IMapFragment {
 
             }
         });
+
+
+
+
     }
 
 
 
 
 
+    @Override
+    public void onResume() {
+        super.onResume();
 
-
+    }
 
     @Override
     public void onDetach() {
@@ -193,8 +209,5 @@ public class MapFragment extends Fragment implements IMapFragment {
         CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(zlevel);
         mMap.moveCamera(cameraUpdate);
     }
-
-
-
 
 }
