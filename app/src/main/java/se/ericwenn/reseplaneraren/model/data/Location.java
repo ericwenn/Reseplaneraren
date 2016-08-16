@@ -49,4 +49,31 @@ public class Location implements ILocation {
     public String getID() {
         return id;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Location location = (Location) o;
+
+        if (Double.compare(location.lon, lon) != 0) return false;
+        if (Double.compare(location.lat, lat) != 0) return false;
+        if (!id.equals(location.id)) return false;
+        return name.equals(location.name);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = id.hashCode();
+        temp = Double.doubleToLongBits(lon);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(lat);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + name.hashCode();
+        return result;
+    }
 }

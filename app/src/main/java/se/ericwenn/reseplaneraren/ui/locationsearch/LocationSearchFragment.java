@@ -17,7 +17,10 @@ import java.util.List;
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
+import se.ericwenn.reseplaneraren.model.providers.ILocationProvider;
+import se.ericwenn.reseplaneraren.model.providers.LocationProvider;
 import se.ericwenn.reseplaneraren.ui.FragmentController;
+import se.ericwenn.reseplaneraren.ui.shared.SimpleRecyclerViewDivider;
 import se.ericwenn.reseplaneraren.util.DataPromise;
 
 
@@ -109,6 +112,8 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+        mRecyclerView.addItemDecoration( new SimpleRecyclerViewDivider(2) );
+        mAdapter.setHasStableIds(true);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -116,20 +121,39 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
     public void changeSearchTerm(String searchTerm, FragmentController.Field f) {
         activeField = f;
         Log.d(TAG, "changeSearchTerm() called with: " + "searchTerm = [" + searchTerm + "], f = [" + f + "]");
-        DataPromise<List<ILocation>> promise = VasttrafikAPIBridge.getInstance().findLocations(searchTerm);
 
-        promise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
-            @Override
-            public void onResolve(List<ILocation> data) {
-                mAdapter.updateDataset(data);
-            }
-        });
-        promise.onReject(new DataPromise.RejectedHandler<List<ILocation>>() {
-            @Override
-            public void onReject(Exception e) {
-                Log.d(TAG, "onReject() called with: " + "e = [" + e + "]");
-            }
-        });
+        if( searchTerm.length() == 0 ) {
+
+
+            ILocationProvider locationProvider = new LocationProvider();
+            DataPromise<List<ILocation>> promise = locationProvider.favorites();
+            promise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
+                @Override
+                public void onResolve(List<ILocation> data) {
+                    mAdapter.updateDataset( data );
+                }
+            });
+
+
+        } else {
+
+
+            DataPromise<List<ILocation>> promise = VasttrafikAPIBridge.getInstance().findLocations(searchTerm);
+
+            promise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
+                @Override
+                public void onResolve(List<ILocation> data) {
+                    mAdapter.updateDataset( data );
+                }
+            });
+            promise.onReject(new DataPromise.RejectedHandler<List<ILocation>>() {
+                @Override
+                public void onReject(Exception e) {
+                    mAdapter.updateDataset(new ArrayList<ILocation>());
+                    Log.d(TAG, "onReject() called with: " + "e = [" + e + "]");
+                    }
+            });
+        }
     }
 
 
@@ -175,14 +199,24 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
             return mDataset.size();
         }
 
+        @Override
+        public long getItemId(int position) {
+            return mDataset.get(position).hashCode();
+        }
 
-        public void updateDataset( List<ILocation> newDataset ) {
+        public void updateDataset(List<ILocation> newDataset ) {
             Log.d(TAG, "updateDataset() called with: " + "newDataset = [" + newDataset + "]" + " length = ["+ newDataset.size() + "]");
+
             mDataset = newDataset;
             notifyDataSetChanged();
 
-
         }
+
+        public void addItem( ILocation l, int pos) {
+            mDataset.add(pos, l);
+            notifyItemInserted(pos);
+        }
+
     }
 
 

@@ -1,12 +1,14 @@
 package se.ericwenn.reseplaneraren.ui;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import java.util.List;
@@ -62,7 +64,7 @@ public class MainActivity extends FragmentActivity implements
         mTripSearchFragment = TripSearchFragmentFactory.create();
 
 
-        FrameLayout bottomSheetFrame = (FrameLayout) findViewById(R.id.bottomsheet_frame);
+        final FrameLayout bottomSheetFrame = (FrameLayout) findViewById(R.id.bottomsheet_frame);
 
         FragmentManager supportFragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
@@ -71,7 +73,20 @@ public class MainActivity extends FragmentActivity implements
 
 
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetFrame);
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if( newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    bottomSheetFrame.requestLayout();
+                    bottomSheetFrame.invalidate();
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
 
         mFragmentSwitcher.showFragment( (Fragment) mMapFragment );
 
@@ -140,7 +155,7 @@ public class MainActivity extends FragmentActivity implements
 
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         //mFragmentSwitcher.showFragment((Fragment) mLocationSearchFragment);
-        //mLocationSearchFragment.changeSearchTerm( searchTerm, f );
+        mLocationSearchFragment.changeSearchTerm( searchTerm, f );
 
     }
 
@@ -158,6 +173,9 @@ public class MainActivity extends FragmentActivity implements
             Log.d(TAG, "onLocationSelected: Both origin and destination is set, starting search");
             mFragmentSwitcher.showFragment((Fragment) mTripSearchFragment);
             mTripSearchFragment.changeRoute( mOrigin, mDestination );
+            mBottomSheetBehavior.setState( BottomSheetBehavior.STATE_COLLAPSED );
+        } else if( f == Field.ORIGIN ) {
+            mSearchFragment.focusField( Field.DESTINATION );
         }
 
     }

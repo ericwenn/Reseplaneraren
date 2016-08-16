@@ -21,16 +21,20 @@
         android:layout_height="wrap_content"
         android:id="@+id/search"
         android:name="se.ericwenn.reseplaneraren.ui.searchbar.SearchFragment"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="15dp"
-        tools:layout="@layout/fragment_search" />
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        tools:layout="@layout/fragment_search"
+        />
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/bottomsheet_frame"
+        android:paddingTop="136dp"
+        android:layout_gravity="bottom"
+        android:clipToPadding="false"
         app:layout_behavior="@string/bottom_sheet_behavior">
     </FrameLayout>
 
