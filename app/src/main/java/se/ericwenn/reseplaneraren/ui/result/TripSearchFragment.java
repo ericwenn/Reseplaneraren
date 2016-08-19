@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -124,13 +125,26 @@ public class TripSearchFragment extends Fragment implements ITripSearchFragment 
         private List<ITrip> mDataset = new ArrayList<>();
 
         public class ViewHolder extends RecyclerView.ViewHolder {
-            public TextView mTripType;
-            public TextView mLegNames;
+            public TextView mDepartureTime;
+            public TextView mDepartureOffset;
+            public TextView mArrivalTime;
+            public TextView mArrivalOffset;
+            public TextView mAdditionInformation;
+
+            public RelativeLayout mTrackTripButton;
+
             public ViewHolder(View itemView) {
                 super(itemView);
 
-                mTripType = (TextView) itemView.findViewById(R.id.trip_type);
-                mLegNames = (TextView) itemView.findViewById(R.id.trip_legnames);
+                mDepartureTime = (TextView) itemView.findViewById(R.id.trip_departure_time);
+                mDepartureOffset = (TextView) itemView.findViewById(R.id.trip_departure_offset);
+
+                mArrivalTime = (TextView) itemView.findViewById(R.id.trip_arrival_time);
+                mArrivalOffset = (TextView) itemView.findViewById(R.id.trip_arrival_offset);
+
+                mAdditionInformation = (TextView) itemView.findViewById(R.id.trip_additional_info);
+
+                mTrackTripButton = (RelativeLayout) itemView.findViewById(R.id.trip_track_button);
             }
         }
 
@@ -142,18 +156,21 @@ public class TripSearchFragment extends Fragment implements ITripSearchFragment 
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+
+            ViewHolder mHolder = (ViewHolder) holder;
             ITrip t = mDataset.get(position);
 
-            // Trip type
-            ((ViewHolder) holder).mTripType.setText( t.getArrivalTime().toString() );
+            // Trip departure
+            mHolder.mDepartureTime.setText( t.getDepartureTime().toString() );
 
-            // Trip leg names
-            String legNames = "";
-            for(se.ericwenn.reseplaneraren.model.data.ILeg l : t.getLegs()) {
-                legNames = legNames + "\r\n" + l.getName();
-            }
+            // Trip arrival
+            mHolder.mArrivalTime.setText( t.getArrivalTime().toString() );
 
-            ((ViewHolder) holder).mLegNames.setText(legNames);
+
+            String additional = "";
+
+            additional += t.getLegs().size() + " byten";
+            mHolder.mAdditionInformation.setText(additional);
         }
 
         @Override
