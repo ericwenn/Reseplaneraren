@@ -12,14 +12,17 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
 import se.ericwenn.reseplaneraren.model.data.ITrip;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
 import se.ericwenn.reseplaneraren.ui.FragmentController;
+import se.ericwenn.reseplaneraren.ui.shared.SimpleRecyclerViewDivider;
 import se.ericwenn.reseplaneraren.util.DataPromise;
 
 public class TripSearchFragment extends Fragment implements ITripSearchFragment {
@@ -59,6 +62,7 @@ public class TripSearchFragment extends Fragment implements ITripSearchFragment 
         View v = inflater.inflate(R.layout.fragment_result, container, false);
         RecyclerView mRecyclerView = (RecyclerView) v.findViewById(R.id.result_recyclerview);
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.addItemDecoration( new SimpleRecyclerViewDivider(4));
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -160,11 +164,12 @@ public class TripSearchFragment extends Fragment implements ITripSearchFragment 
             ViewHolder mHolder = (ViewHolder) holder;
             ITrip t = mDataset.get(position);
 
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
             // Trip departure
-            mHolder.mDepartureTime.setText( t.getDepartureTime().toString() );
+            mHolder.mDepartureTime.setText( sdf.format( t.getDepartureTime()) );
 
             // Trip arrival
-            mHolder.mArrivalTime.setText( t.getArrivalTime().toString() );
+            mHolder.mArrivalTime.setText( sdf.format(t.getArrivalTime()) );
 
 
             String additional = "";

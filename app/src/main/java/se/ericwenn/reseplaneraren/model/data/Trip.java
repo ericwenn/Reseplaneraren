@@ -1,7 +1,12 @@
 package se.ericwenn.reseplaneraren.model.data;
 
+import android.util.Log;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by ericwenn on 7/29/16.
@@ -42,6 +47,7 @@ public class Trip implements ITrip {
         private float kcal;
 
         // TODO Origin (Origin, optional),
+        public Origin Origin;
 
         // (string, optional): Short name of the leg,
         private String sname;
@@ -72,6 +78,7 @@ public class Trip implements ITrip {
         private String night;
 
         // TODO Destination (Destination, optional),
+        public Destination Destination;
 
         // percentBikeRoad (float, optional): Percentage of the route that is made up of bike roads,
         private float percentBikeRoad;
@@ -83,7 +90,128 @@ public class Trip implements ITrip {
             return name;
         }
 
+        @Override
+        public LegRef getOrigin() {
+            Log.d(TAG, "getOrigin: "+ Origin);
+            return Origin;
+        }
+
+        @Override
+        public LegRef getDestination() {
+            return Destination;
+        }
+
+        public static class Origin implements ILeg.LegRef {
+
+            //routeIdx (string, optional): Route index of a stop/station. Can be used as a reference of the stop/station in a journeyDetail response,
+
+            //$ (string),
+            // cancelled (boolean, optional): Will be set to true if departure/arrival at this stop is cancelled,
+            private boolean cancelled;
+
+            //        track (string, optional): Track information, if available,
+            private String track;
+
+            //        rtTrack (string, optional): Realtime track information, if available,
+
+            //        type (string): The attribute type specifies the type of location. Valid values are ST (stop/station), ADR (address) or POI (point of interest),
+            private String type;
+
+            //date (date): Date in format YYYY-MM-DD,
+            public String date;
+
+            //        Notes (Notes, optional),
+
+            //id (string, optional): ID of this stop,
+            private String id;
+
+            //        rtDate (date, optional): Realtime date in format YYYY-MM-DD, if available,
+
+            // time (string): Time in format HH:MM,
+            public String time;
+
+            //directdate (date, optional): Date in format YYYY-MM-DD. Based on the direct travel time,
+
+            // name (string): Contains the name of the location,
+            private String name;
+
+            @Override
+            public Date getTime() {
+                Log.d(TAG, "Orgiin getTime: date=["+date+"] time=["+time+"]");
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+                try {
+                    return sdf.parse(date + " " + time);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            //rtTime (string, optional): Realtime time in format HH:MM if available,
+            // directtime (string, optional): Direct Time format HH:MM. Based on the direct travel time
+        }
+
+
+        public static class Destination implements ILeg.LegRef {
+
+            //routeIdx (string, optional): Route index of a stop/station. Can be used as a reference of the stop/station in a journeyDetail response,
+
+            //$ (string),
+            // cancelled (boolean, optional): Will be set to true if departure/arrival at this stop is cancelled,
+            private boolean cancelled;
+
+            //        track (string, optional): Track information, if available,
+            private String track;
+
+            //        rtTrack (string, optional): Realtime track information, if available,
+
+            //        type (string): The attribute type specifies the type of location. Valid values are ST (stop/station), ADR (address) or POI (point of interest),
+            private String type;
+
+            //date (date): Date in format YYYY-MM-DD,
+            public String date;
+
+            //        Notes (Notes, optional),
+
+            //id (string, optional): ID of this stop,
+            private String id;
+
+            //        rtDate (date, optional): Realtime date in format YYYY-MM-DD, if available,
+
+            // time (string): Time in format HH:MM,
+            public String time;
+
+            //directdate (date, optional): Date in format YYYY-MM-DD. Based on the direct travel time,
+
+            // name (string): Contains the name of the location,
+            private String name;
+
+
+            @Override
+            public Date getTime() {
+                Log.d(TAG, "Destination getTime: date=["+date+"] time=["+time+"]");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+                try {
+                    return sdf.parse(date + " " + time);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            //rtTime (string, optional): Realtime time in format HH:MM if available,
+            // directtime (string, optional): Direct Time format HH:MM. Based on the direct travel time
+        }
+
+
     }
+
+
+
+
+
+
 
 
 
@@ -95,13 +223,30 @@ public class Trip implements ITrip {
         return Leg;
     }
 
+
+
     @Override
     public Date getDepartureTime() {
-        return new Date();
+        Log.d(TAG, "getDepartureTime: legs.size() = "+getLegs().size());
+        ILeg firstLeg = getLegs().get(0);
+        Log.d(TAG, "getDepartureTime: firstLeg.origin = "+ firstLeg.getOrigin());
+        if( firstLeg.getOrigin() == null ) {
+            return new Date();
+        } else {
+            return firstLeg.getOrigin().getTime();
+
+        }
     }
 
     @Override
     public Date getArrivalTime() {
-        return new Date();
+
+        ILeg lastLeg = getLegs().get( getLegs().size() - 1);
+        if( lastLeg.getDestination() == null ) {
+            return new Date();
+        } else {
+            return lastLeg.getDestination().getTime();
+
+        }
     }
 }

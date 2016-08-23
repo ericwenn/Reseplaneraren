@@ -8,10 +8,10 @@ import se.ericwenn.reseplaneraren.model.data.ITrip;
  */
 public interface FragmentController {
 
-    public void onSearchTermChanged( String searchTerm, Field f);
-    public void onLocationSelected(ILocation l, Field f);
-    public void onTripSelected( ITrip t);
-    public void starLocation( ILocation l);
+    void onSearchTermChanged(String searchTerm, Field f);
+    void onLocationSelected(ILocation l, Field f);
+    void onTripSelected(ITrip t);
+    void starLocation(ILocation l);
 
 
     enum Field {

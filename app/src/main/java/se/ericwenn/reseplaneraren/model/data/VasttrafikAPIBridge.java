@@ -98,6 +98,8 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
 
                             String s = o.getJSONObject("TripList").getString("Trip");
 
+                            Log.d(TAG, "onSuccess: "+s);
+
 
                             ObjectMapper m = new ObjectMapper();
                             m.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);

@@ -162,6 +162,7 @@ public class MainActivity extends FragmentActivity implements
     public void onLocationSelected(ILocation l, Field f) {
         Log.d(TAG, "onLocationSelected() called with: " + "l = [" + l + "], f = [" + f + "]");
         updateCurrentLocation(l, f);
+        Log.d(TAG, "onLocationSelected() Origin: ["+mOrigin+"] Destination: ["+mDestination+"]");
         if( f == Field.ORIGIN ) {
             mSearchFragment.setOriginLocation(l);
         } else {
