@@ -15,7 +15,7 @@ import java.util.List;
 
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
-import se.ericwenn.reseplaneraren.model.data.ITrip;
+import se.ericwenn.reseplaneraren.model.data.trip.ITrip;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
 import se.ericwenn.reseplaneraren.ui.locationsearch.ILocationSearchFragment;
 import se.ericwenn.reseplaneraren.ui.locationsearch.LocationSearchFragmentFactory;

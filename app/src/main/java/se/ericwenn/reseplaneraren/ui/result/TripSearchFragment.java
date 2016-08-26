@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -19,8 +20,9 @@ import java.util.Locale;
 
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
-import se.ericwenn.reseplaneraren.model.data.ITrip;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
+import se.ericwenn.reseplaneraren.model.data.trip.ILeg;
+import se.ericwenn.reseplaneraren.model.data.trip.ITrip;
 import se.ericwenn.reseplaneraren.ui.FragmentController;
 import se.ericwenn.reseplaneraren.ui.shared.SimpleRecyclerViewDivider;
 import se.ericwenn.reseplaneraren.util.DataPromise;
@@ -134,12 +136,16 @@ public class TripSearchFragment extends Fragment implements ITripSearchFragment 
             public TextView mArrivalTime;
             public TextView mArrivalOffset;
             public TextView mAdditionInformation;
+            public LinearLayout mToggleTrigger;
 
             public RelativeLayout mTrackTripButton;
 
-            public ViewHolder(View itemView) {
+            public RecyclerView mRecyclerView;
+
+            public ViewHolder(final View itemView) {
                 super(itemView);
 
+                mToggleTrigger = (LinearLayout) itemView.findViewById(R.id.toggle_trigger);
                 mDepartureTime = (TextView) itemView.findViewById(R.id.trip_departure_time);
                 mDepartureOffset = (TextView) itemView.findViewById(R.id.trip_departure_offset);
 
@@ -149,6 +155,16 @@ public class TripSearchFragment extends Fragment implements ITripSearchFragment 
                 mAdditionInformation = (TextView) itemView.findViewById(R.id.trip_additional_info);
 
                 mTrackTripButton = (RelativeLayout) itemView.findViewById(R.id.trip_track_button);
+
+                mRecyclerView = (RecyclerView) itemView.findViewById(R.id.leg_recyclerView);
+                mRecyclerView.setAdapter( new TripLegAdapter() );
+                RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager( getActivity() );
+                mRecyclerView.setLayoutManager( mLayoutManager );
+
+
+
+
+                
             }
         }
 
@@ -159,10 +175,11 @@ public class TripSearchFragment extends Fragment implements ITripSearchFragment 
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
 
-            ViewHolder mHolder = (ViewHolder) holder;
-            ITrip t = mDataset.get(position);
+            final View itemView = holder.itemView;
+            final ViewHolder mHolder = (ViewHolder) holder;
+            final ITrip t = mDataset.get(position);
 
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
             // Trip departure
@@ -174,8 +191,28 @@ public class TripSearchFragment extends Fragment implements ITripSearchFragment 
 
             String additional = "";
 
-            additional += t.getLegs().size() + " byten";
+            additional += t.getNumberOfSwitches() + " byten";
+
             mHolder.mAdditionInformation.setText(additional);
+
+            mHolder.mToggleTrigger.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    TripLegAdapter mAdapter = (TripLegAdapter) mHolder.mRecyclerView.getAdapter();
+                    if( mHolder.mRecyclerView.getVisibility() == View.GONE) {
+                        Log.d(TAG, "onClick: Expanding item");
+                        mAdapter.updateDataset( t.getLegs() );
+                        mHolder.mRecyclerView.setVisibility( View.VISIBLE );
+
+                    } else {
+                        Log.d(TAG, "onClick: Collapsing item");
+                        mAdapter.updateDataset( new ArrayList<ILeg>() );
+                        mHolder.mRecyclerView.setVisibility( View.GONE );
+                    }
+                    notifyItemChanged( position );
+
+                }
+            });
         }
 
         @Override
@@ -189,6 +226,54 @@ public class TripSearchFragment extends Fragment implements ITripSearchFragment 
             notifyDataSetChanged();
 
 
+        }
+    }
+
+
+
+
+
+
+    class TripLegAdapter extends RecyclerView.Adapter {
+
+        private List<? extends ILeg> mDataset = new ArrayList<>();
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public TextView mLegName;
+
+            public ViewHolder(final View itemView) {
+                super(itemView);
+
+                mLegName = (TextView) itemView.findViewById(R.id.leg_name);
+
+            }
+        }
+
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            Log.d(TAG, "onCreateViewHolder() called with: " + "parent = [" + parent + "], viewType = [" + viewType + "]");
+            View v = LayoutInflater.from( parent.getContext()).inflate(R.layout.view_tripleg, parent, false);
+            return new ViewHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            Log.d(TAG, "onBindViewHolder() called with: " + "holder = [" + holder + "], position = [" + position + "]");
+            ViewHolder h = (ViewHolder) holder;
+            h.mLegName.setText( mDataset.get(position).getName());
+            Log.d(TAG, "onBindViewHolder: finished");
+        }
+
+        @Override
+        public int getItemCount() {
+            return mDataset.size();
+        }
+
+        public void updateDataset( List<? extends ILeg> newDataset ) {
+            Log.d(TAG, "updateDataset() called with: " + "newDataset = [" + newDataset + "]");
+            mDataset = newDataset;
+            notifyDataSetChanged();
         }
     }
 
