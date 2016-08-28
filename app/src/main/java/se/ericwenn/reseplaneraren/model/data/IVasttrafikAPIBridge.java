@@ -2,6 +2,7 @@ package se.ericwenn.reseplaneraren.model.data;
 
 import java.util.List;
 
+import se.ericwenn.reseplaneraren.model.data.trip.ITrip;
 import se.ericwenn.reseplaneraren.util.DataPromise;
 
 /**
@@ -11,7 +12,7 @@ public interface IVasttrafikAPIBridge {
 
     DataPromise<List<ILocation>> findLocations(String search);
 
-    DataPromise<List<ITrip>> getTrips( ILocation from, ILocation to );
+    DataPromise<List<ITrip>> getTrips(ILocation from, ILocation to );
 
     DataPromise<List<ILocation>> findNearbyStops(double lat, double lon);
     DataPromise<List<ILocation>> findNearbyStops(double lat, double lon, int maxDistance);

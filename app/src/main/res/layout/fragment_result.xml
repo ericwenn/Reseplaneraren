@@ -2,13 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.locationsearch.LocationSearchFragment"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="136dp">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/result_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:listitem="@layout/view_trip"/>
 
 
 </LinearLayout>

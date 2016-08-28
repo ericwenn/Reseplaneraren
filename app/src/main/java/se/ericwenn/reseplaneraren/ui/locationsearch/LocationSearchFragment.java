@@ -120,7 +120,6 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
     @Override
     public void changeSearchTerm(String searchTerm, FragmentController.Field f) {
         activeField = f;
-        Log.d(TAG, "changeSearchTerm() called with: " + "searchTerm = [" + searchTerm + "], f = [" + f + "]");
 
         if( searchTerm.length() == 0 ) {
 
@@ -188,14 +187,12 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            Log.d(TAG, "onBindViewHolder() called with: " + "holder = [" + holder + "], position = [" + position + "]");
             ((ViewHolder) holder).mTextView.setText( mDataset.get(position).getName() );
         }
 
         @Override
         public int getItemCount() {
 
-            Log.d(TAG, "getItemCount: "+mDataset.size());
             return mDataset.size();
         }
 
@@ -205,7 +202,6 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
         }
 
         public void updateDataset(List<ILocation> newDataset ) {
-            Log.d(TAG, "updateDataset() called with: " + "newDataset = [" + newDataset + "]" + " length = ["+ newDataset.size() + "]");
 
             mDataset = newDataset;
             notifyDataSetChanged();

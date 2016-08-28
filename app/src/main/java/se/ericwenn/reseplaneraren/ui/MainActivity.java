@@ -15,7 +15,7 @@ import java.util.List;
 
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
-import se.ericwenn.reseplaneraren.model.data.ITrip;
+import se.ericwenn.reseplaneraren.model.data.trip.ITrip;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
 import se.ericwenn.reseplaneraren.ui.locationsearch.ILocationSearchFragment;
 import se.ericwenn.reseplaneraren.ui.locationsearch.LocationSearchFragmentFactory;
@@ -162,6 +162,7 @@ public class MainActivity extends FragmentActivity implements
     public void onLocationSelected(ILocation l, Field f) {
         Log.d(TAG, "onLocationSelected() called with: " + "l = [" + l + "], f = [" + f + "]");
         updateCurrentLocation(l, f);
+        Log.d(TAG, "onLocationSelected() Origin: ["+mOrigin+"] Destination: ["+mDestination+"]");
         if( f == Field.ORIGIN ) {
             mSearchFragment.setOriginLocation(l);
         } else {
@@ -188,7 +189,7 @@ public class MainActivity extends FragmentActivity implements
     }
 
     @Override
-    public void onTripSelected(ITrip t) {
+    public void onTrackTrip(ITrip t) {
         Log.d(TAG, "onTripSelected() called with: " + "t = [" + t + "]");
     }
 

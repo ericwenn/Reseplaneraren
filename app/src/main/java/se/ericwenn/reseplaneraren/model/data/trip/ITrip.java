@@ -1,4 +1,4 @@
-package se.ericwenn.reseplaneraren.model.data;
+package se.ericwenn.reseplaneraren.model.data.trip;
 
 import java.util.Date;
 import java.util.List;
@@ -8,7 +8,17 @@ import java.util.List;
  */
 public interface ITrip {
 
+    boolean isValid();
+
     List<? extends ILeg> getLegs();
+
+
     Date getDepartureTime();
+    int getDepartureOffset();
     Date getArrivalTime();
+    int getArrivalOffset();
+
+
+    int getNumberOfSwitches();
+    int getTotalTravelMinutes();
 }

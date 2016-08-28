@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import se.ericwenn.reseplaneraren.model.data.trip.ITrip;
+import se.ericwenn.reseplaneraren.model.data.trip.Trip;
 import se.ericwenn.reseplaneraren.services.IAuthorizer;
 import se.ericwenn.reseplaneraren.services.IResponseAction;
 import se.ericwenn.reseplaneraren.services.IRestClient;
@@ -97,6 +99,8 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
                             JSONObject o = new JSONObject(responseBody);
 
                             String s = o.getJSONObject("TripList").getString("Trip");
+
+                            Log.d(TAG, "onSuccess: "+s);
 
 
                             ObjectMapper m = new ObjectMapper();
