@@ -7,7 +7,10 @@ import java.util.Date;
  */
 public interface ITripStop {
     Date getTime();
+    String getName();
+    String getTrack();
     Date getRealTime();
+    int getOffsetMinutes();
     String getID();
     boolean isCancelled();
 

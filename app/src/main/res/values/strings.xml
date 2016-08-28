@@ -8,4 +8,6 @@
     <string name="travel_from_here">Travel from here</string>
     <string name="travel_here">Åk hit</string>
     <string name="star">star</string>
+    <string name="leg_node">%1$s (%2$s)</string>
+    <string name="leg_travel_time">%1$d min</string>
 </resources>

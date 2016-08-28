@@ -18,7 +18,7 @@ public class TripStop implements ITripStop {
     private boolean cancelled;
 
     //        track (string, optional): Track information, if available,
-    private String track;
+    public String track;
 
     //        rtTrack (string, optional): Realtime track information, if available,
 
@@ -43,7 +43,7 @@ public class TripStop implements ITripStop {
     //directdate (date, optional): Date in format YYYY-MM-DD. Based on the direct travel time,
 
     // name (string): Contains the name of the location,
-    private String name;
+    public String name;
 
     @Override
     public Date getTime() {
@@ -56,13 +56,28 @@ public class TripStop implements ITripStop {
     }
 
     @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getTrack() {
+        return track;
+    }
+
+    @Override
     public Date getRealTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
         try {
             return sdf.parse( rtDate + " " + rtTime);
         } catch (ParseException e) {
-            return null;
+            return getTime();
         }
+    }
+
+    @Override
+    public int getOffsetMinutes() {
+        return (int) (getRealTime().getTime() - getTime().getTime()) / 60000;
     }
 
     @Override

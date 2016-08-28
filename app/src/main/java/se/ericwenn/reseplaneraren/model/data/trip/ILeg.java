@@ -6,10 +6,13 @@ package se.ericwenn.reseplaneraren.model.data.trip;
 public interface ILeg {
 
     String getName();
+    String getShortName();
     Type getType();
 
-    int getBackgroundColor();
-    int getForegroundColor();
+    int getTravelMinutes();
+
+    int getBackgroundColor() throws NullPointerException;
+    int getForegroundColor() throws NullPointerException;
 
     String getID();
 

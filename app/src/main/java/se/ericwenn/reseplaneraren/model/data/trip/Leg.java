@@ -1,7 +1,6 @@
 package se.ericwenn.reseplaneraren.model.data.trip;
 
 import android.graphics.Color;
-import android.util.Log;
 
 /**
  * Created by ericwenn on 8/24/16.
@@ -9,7 +8,7 @@ import android.util.Log;
 public class Leg implements ILeg {
 
     // (string, optional): Foregroundcolor of this line,
-    private String fgColor;
+    public String fgColor;
 
     // (boolean, optional): Will be true if this journey needs to be booked,
     private boolean booking;
@@ -36,7 +35,7 @@ public class Leg implements ILeg {
     // TODO GeometryRef (GeometryRef, optional),
 
     // (string, optional): Backgroundcolor of this line,
-    private String bgColor;
+    public String bgColor;
 
     // TODO Notes (Notes, optional),
 
@@ -67,8 +66,12 @@ public class Leg implements ILeg {
 
     @Override
     public String getName() {
-        Log.d("Leg temp", "getName: "+name);
         return name;
+    }
+
+    @Override
+    public String getShortName() {
+        return sname;
     }
 
     @Override
@@ -110,12 +113,19 @@ public class Leg implements ILeg {
     }
 
     @Override
-    public int getBackgroundColor() {
+    public int getBackgroundColor() throws NullPointerException {
+        if( bgColor == null) {
+            throw new NullPointerException("Backgroundcolor is null");
+        }
+
         return Color.parseColor( bgColor );
     }
 
     @Override
-    public int getForegroundColor() {
+    public int getForegroundColor() throws NullPointerException {
+        if( fgColor == null ) {
+            throw new NullPointerException("Foreground color is null");
+        }
         return Color.parseColor( fgColor );
     }
 
@@ -137,5 +147,11 @@ public class Leg implements ILeg {
     @Override
     public ITripStop getDestination() {
         return Destination;
+    }
+
+
+    @Override
+    public int getTravelMinutes() {
+        return (int)(getDestination().getTime().getTime() - getOrigin().getTime().getTime())/60000;
     }
 }
