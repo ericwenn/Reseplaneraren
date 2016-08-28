@@ -5,95 +5,99 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:background="#fff"
-        android:id="@+id/toggle_trigger"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/trip_view_collapsed_height"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:layout_toLeftOf="@+id/divider"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/trip_header"
+        android:elevation="3dp"
+        android:clipToPadding="false"
+        android:background="@color/list_item_background">
         <LinearLayout
+            android:id="@+id/toggle_trigger"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp">
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/trip_track_button">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="17:23"
+                    android:textSize="16sp"
+                    android:textColor="#000"
+                    android:id="@+id/trip_departure_time"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="-4"
+                    android:text="@string/time_offset"
+                    android:textColor="#0a0"
+                    android:textSize="16sp"
+                    android:id="@+id/trip_departure_offset"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text=" - "
+                    android:textColor="#000"
+                    android:text="@string/time_divider"
+                    android:textSize="16sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="19:13"
+                    android:textColor="#000"
+                    android:textSize="16sp"
+                    android:id="@+id/trip_arrival_time"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="+4"
+                    android:text="@string/time_offset"
+                    android:textColor="#f00"
+                    android:textSize="16sp"
+                    android:id="@+id/trip_arrival_offset"/>
+
+            </LinearLayout>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="17:23"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:id="@+id/trip_departure_time"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="-4"
-                android:text="@string/time_offset"
-                android:textColor="#0a0"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:id="@+id/trip_departure_offset"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text=" - "
-                android:text="@string/time_divider"
-                android:textSize="16sp"
-                android:textStyle="bold"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="19:13"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:id="@+id/trip_arrival_time"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="+4"
-                android:text="@string/time_offset"
-                android:textColor="#f00"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:id="@+id/trip_arrival_offset"/>
+                android:textSize="12sp"
+                tools:text="4 byten - 20 minuters väntan"
+                android:id="@+id/trip_additional_info"/>
 
         </LinearLayout>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="4 byten - 20 minuters väntan"
-            android:id="@+id/trip_additional_info"/>
-
-    </LinearLayout>
-
-    <View
-        android:layout_width="2dp"
-        android:id="@+id/divider"
-        android:layout_height="@dimen/trip_view_collapsed_height"
-        android:layout_toLeftOf="@+id/trip_track_button"/>
-
-    <RelativeLayout
-        android:layout_width="@dimen/trip_view_collapsed_height"
-        android:layout_height="@dimen/trip_view_collapsed_height"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:id="@+id/trip_track_button"
-        android:background="#fff">
         <ImageView
+            android:id="@+id/trip_track_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_notifications_active_black_24dp"
-            android:layout_centerInParent="true"/>
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"/>
+
 
     </RelativeLayout>
+
+
+
+
+
 
     <android.support.v7.widget.RecyclerView
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/toggle_trigger"
+        android:layout_below="@+id/trip_header"
         android:id="@+id/leg_recyclerView"/>
 
 

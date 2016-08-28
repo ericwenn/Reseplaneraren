@@ -8,8 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -44,7 +44,7 @@ public class ResultAdapter extends RecyclerView.Adapter {
         public TextView mAdditionInformation;
         public LinearLayout mToggleTrigger;
 
-        public RelativeLayout mTrackTripButton;
+        public ImageView mTrackTripButton;
 
         public RecyclerView mRecyclerView;
 
@@ -60,7 +60,7 @@ public class ResultAdapter extends RecyclerView.Adapter {
 
             mAdditionInformation = (TextView) itemView.findViewById(R.id.trip_additional_info);
 
-            mTrackTripButton = (RelativeLayout) itemView.findViewById(R.id.trip_track_button);
+            mTrackTripButton = (ImageView) itemView.findViewById(R.id.trip_track_button);
 
 
             mRecyclerView = (RecyclerView) itemView.findViewById(R.id.leg_recyclerView);

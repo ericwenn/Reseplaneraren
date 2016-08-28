@@ -3,11 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="92dp"
-    android:padding="16dp">
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@color/list_item_inset_background">
     <RelativeLayout
         android:layout_width="60dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:id="@+id/icon_holder">
         <TextView
             android:layout_width="wrap_content"
