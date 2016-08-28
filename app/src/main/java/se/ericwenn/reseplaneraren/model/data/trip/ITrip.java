@@ -14,7 +14,9 @@ public interface ITrip {
 
 
     Date getDepartureTime();
+    int getDepartureOffset();
     Date getArrivalTime();
+    int getArrivalOffset();
 
 
     int getNumberOfSwitches();

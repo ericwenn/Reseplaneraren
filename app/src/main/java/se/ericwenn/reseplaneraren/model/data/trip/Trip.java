@@ -1,7 +1,5 @@
 package se.ericwenn.reseplaneraren.model.data.trip;
 
-import android.util.Log;
-
 import java.util.Date;
 import java.util.List;
 
@@ -45,11 +43,9 @@ public class Trip implements ITrip {
 
     @Override
     public Date getDepartureTime() {
-        Log.d(TAG, "getDepartureTime: legs.size() = "+getLegs().size());
         ILeg firstLeg = getLegs().get(0);
-        Log.d(TAG, "getDepartureTime: firstLeg.origin = "+ firstLeg.getOrigin());
         if( firstLeg.getOrigin() == null ) {
-            return new Date();
+            throw new NullPointerException();
         } else {
             return firstLeg.getOrigin().getTime();
 
@@ -57,15 +53,25 @@ public class Trip implements ITrip {
     }
 
     @Override
+    public int getDepartureOffset() {
+        return getLegs().get(0).getOrigin().getOffsetMinutes();
+    }
+
+    @Override
     public Date getArrivalTime() {
 
         ILeg lastLeg = getLegs().get( getLegs().size() - 1);
-        if( lastLeg.getDestination() == null ) {
-            return new Date();
+        if (lastLeg.getDestination() == null) {
+            throw new NullPointerException();
         } else {
             return lastLeg.getDestination().getTime();
 
         }
+    }
+
+    @Override
+    public int getArrivalOffset() {
+        return getLegs().get(getLegs().size() - 1).getDestination().getOffsetMinutes();
     }
 
     @Override

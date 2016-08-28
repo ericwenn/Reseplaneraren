@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -21,14 +22,15 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="17:23"
+                tools:text="17:23"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:id="@+id/trip_departure_time"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="-4"
+                tools:text="-4"
+                android:text="@string/time_offset"
                 android:textColor="#0a0"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -36,20 +38,22 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" - "
+                tools:text=" - "
+                android:text="@string/time_divider"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="19:13"
+                tools:text="19:13"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:id="@+id/trip_arrival_time"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="+4"
+                tools:text="+4"
+                android:text="@string/time_offset"
                 android:textColor="#f00"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -59,7 +63,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="4 byten - 20 minuters väntan"
+            tools:text="4 byten - 20 minuters väntan"
             android:id="@+id/trip_additional_info"/>
 
     </LinearLayout>

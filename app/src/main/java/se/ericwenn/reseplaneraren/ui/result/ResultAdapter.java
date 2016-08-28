@@ -1,6 +1,7 @@
 package se.ericwenn.reseplaneraren.ui.result;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -88,12 +89,51 @@ public class ResultAdapter extends RecyclerView.Adapter {
         final ITrip t = mDataset.get(position);
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+
         // Trip departure
         mHolder.mDepartureTime.setText( sdf.format( t.getDepartureTime()) );
+
+        // Trip departureOffset
+        if( t.getDepartureOffset() != 0) {
+            Resources res = context.getResources();
+            int color;
+            String token;
+            if( t.getDepartureOffset() < 0 ) {
+                color = res.getColor(R.color.time_offset_positive);
+                token = "-";
+            } else {
+                color = res.getColor(R.color.time_offset_negative);
+                token = "+";
+            }
+            mHolder.mDepartureOffset.setTextColor( color );
+            mHolder.mDepartureOffset.setText( res.getString(R.string.time_offset, token, t.getDepartureOffset()));
+        } else {
+            mHolder.mDepartureOffset.setVisibility(View.GONE);
+        }
+
+
+
 
         // Trip arrival
         mHolder.mArrivalTime.setText( sdf.format(t.getArrivalTime()) );
 
+        // Trip arrivalOffset
+        if( t.getArrivalOffset() != 0) {
+            Resources res = context.getResources();
+            int color;
+            String token;
+            if( t.getArrivalOffset() < 0 ) {
+                color = res.getColor(R.color.time_offset_positive);
+                token = "-";
+            } else {
+                color = res.getColor(R.color.time_offset_negative);
+                token = "+";
+            }
+            mHolder.mArrivalOffset.setTextColor( color );
+            mHolder.mArrivalOffset.setText( res.getString(R.string.time_offset, token, t.getDepartureOffset()));
+        } else {
+            mHolder.mArrivalOffset.setVisibility( View.GONE);
+        }
 
         String additional = "";
 
