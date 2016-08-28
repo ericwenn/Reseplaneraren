@@ -28,13 +28,15 @@ public class ResultAdapter extends RecyclerView.Adapter {
 
     private List<ITrip> mDataset = new ArrayList<>();
     private final Context context;
+    private TrackTripListener mTrackTripListener;
 
     private int expandedTripPosition = -1;
 
 
-    public ResultAdapter(Context context) {
+    public ResultAdapter(Context context, TrackTripListener listener) {
         super();
         this.context = context;
+        mTrackTripListener = listener;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -165,6 +167,13 @@ public class ResultAdapter extends RecyclerView.Adapter {
                     notifyItemChanged(expandedTripPosition);
                 }
 
+            }
+        });
+
+        mHolder.mTrackTripButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mTrackTripListener.onTrackTrip( t );
             }
         });
     }

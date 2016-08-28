@@ -189,7 +189,7 @@ public class MainActivity extends FragmentActivity implements
     }
 
     @Override
-    public void onTripSelected(ITrip t) {
+    public void onTrackTrip(ITrip t) {
         Log.d(TAG, "onTripSelected() called with: " + "t = [" + t + "]");
     }
 

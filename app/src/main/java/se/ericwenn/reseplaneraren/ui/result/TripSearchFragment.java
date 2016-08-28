@@ -46,7 +46,13 @@ public class TripSearchFragment extends Fragment implements ITripSearchFragment 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAdapter = new ResultAdapter( getActivity() );
+
+        mAdapter = new ResultAdapter(getActivity(), new TrackTripListener() {
+            @Override
+            public void onTrackTrip(ITrip t) {
+                mController.onTrackTrip(t);
+            }
+        });
 
     }
 

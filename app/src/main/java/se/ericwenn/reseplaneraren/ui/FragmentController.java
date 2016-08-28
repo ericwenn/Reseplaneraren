@@ -10,8 +10,10 @@ public interface FragmentController {
 
     void onSearchTermChanged(String searchTerm, Field f);
     void onLocationSelected(ILocation l, Field f);
-    void onTripSelected(ITrip t);
     void starLocation(ILocation l);
+
+    void onTrackTrip(ITrip t);
+
 
 
     enum Field {
