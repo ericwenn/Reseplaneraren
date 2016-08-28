@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +28,8 @@ public class ResultAdapter extends RecyclerView.Adapter {
 
     private List<ITrip> mDataset = new ArrayList<>();
     private final Context context;
+
+    private int expandedTripPosition = -1;
 
 
     public ResultAdapter(Context context) {
@@ -67,10 +68,6 @@ public class ResultAdapter extends RecyclerView.Adapter {
             mRecyclerView.setAdapter( new TripLegAdapter( context ) );
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager( context );
             mRecyclerView.setLayoutManager( mLayoutManager );
-
-
-
-
 
         }
     }
@@ -144,22 +141,29 @@ public class ResultAdapter extends RecyclerView.Adapter {
         final TripLegAdapter legAdapter = (TripLegAdapter) mHolder.mRecyclerView.getAdapter();
         final RecyclerView legRecyclerView = mHolder.mRecyclerView;
 
+        if( position == expandedTripPosition ) {
+            legAdapter.updateDataset( t.getLegs() );
+            legRecyclerView.setVisibility( View.VISIBLE );
+        } else {
+            legAdapter.updateDataset( new ArrayList<ILeg>() );
+            legRecyclerView.setVisibility( View.GONE );
+        }
+
 
         mHolder.mToggleTrigger.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            if( mHolder.mRecyclerView.getVisibility() == View.GONE) {
-                Log.d(TAG, "onClick: Expanding item");
-                legAdapter.updateDataset( t.getLegs() );
-                legRecyclerView.setVisibility( View.VISIBLE );
-
-            } else {
-                Log.d(TAG, "onClick: Collapsing item");
-                legAdapter.updateDataset( new ArrayList<ILeg>() );
-                legRecyclerView.setVisibility( View.GONE );
-            }
-                // TODO add animation
-            //notifyItemChanged( mHolder.getAdapterPosition() );
+                if (mHolder.getAdapterPosition() == expandedTripPosition) {
+                    expandedTripPosition = -1;
+                    notifyItemChanged(mHolder.getAdapterPosition());
+                } else {
+                    if( expandedTripPosition > -1) {
+                        int lastExpandedPosition = expandedTripPosition;
+                        notifyItemChanged(lastExpandedPosition);
+                    }
+                    expandedTripPosition = mHolder.getAdapterPosition();
+                    notifyItemChanged(expandedTripPosition);
+                }
 
             }
         });
@@ -177,4 +181,13 @@ public class ResultAdapter extends RecyclerView.Adapter {
 
 
     }
+
+
+
+    private void closeCurrentlyExpandedItem() {
+        if (expandedTripPosition > -1) {
+
+        }
+    }
+
 }
