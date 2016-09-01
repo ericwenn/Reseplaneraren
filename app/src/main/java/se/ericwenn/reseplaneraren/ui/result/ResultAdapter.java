@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,7 +84,6 @@ public class ResultAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-        final View itemView = holder.itemView;
         final ViewHolder mHolder = (ViewHolder) holder;
         final ITrip t = mDataset.get(position);
 
@@ -91,6 +91,7 @@ public class ResultAdapter extends RecyclerView.Adapter {
 
         // Trip departure
         mHolder.mDepartureTime.setText( sdf.format( t.getDepartureTime()) );
+
 
         // Trip departureOffset
         if( t.getDepartureOffset() != 0) {
@@ -155,15 +156,16 @@ public class ResultAdapter extends RecyclerView.Adapter {
         mHolder.mToggleTrigger.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mHolder.getAdapterPosition() == expandedTripPosition) {
+                int position = mHolder.getAdapterPosition();
+                if (position == expandedTripPosition) {
                     expandedTripPosition = -1;
-                    notifyItemChanged(mHolder.getAdapterPosition());
+                    notifyItemChanged(position);
                 } else {
                     if( expandedTripPosition > -1) {
                         int lastExpandedPosition = expandedTripPosition;
                         notifyItemChanged(lastExpandedPosition);
                     }
-                    expandedTripPosition = mHolder.getAdapterPosition();
+                    expandedTripPosition = position;
                     notifyItemChanged(expandedTripPosition);
                 }
 
