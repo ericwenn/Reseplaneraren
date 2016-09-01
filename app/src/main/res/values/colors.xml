@@ -7,6 +7,6 @@
     <color name="time_offset_negative">#f00</color>
     <color name="list_item_background">#fff</color>
     <color name="list_item_inset_background">#eee</color>
-    <color name="search_field_completed">#dfd</color>
-    <color name="search_field_incomplete">#fff</color>
+    <color name="search_field_incomplete">#444</color>
+    <color name="search_field_complete">#000</color>
 </resources>

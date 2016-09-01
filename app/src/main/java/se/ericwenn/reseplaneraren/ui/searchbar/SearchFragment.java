@@ -76,8 +76,11 @@ public class SearchFragment extends Fragment implements ISearchFragment {
         View v = inflater.inflate(R.layout.fragment_search, container, false);
 
         originInput = (EditText) v.findViewById(R.id.origin_input);
-        destinationInput = (EditText) v.findViewById(R.id.destination_input);
+        originInput.setSelectAllOnFocus(true);
 
+        destinationInput = (EditText) v.findViewById(R.id.destination_input);
+        destinationInput.setSelectAllOnFocus(true);
+        
         mOriginFocusChangeListener = new OnFocusChangeListener(FragmentController.Field.ORIGIN);
         mDestinationFocusChangeListener = new OnFocusChangeListener(FragmentController.Field.DESTINATION);
 
@@ -213,11 +216,9 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
     private void setFieldCompletion(EditText field, boolean isComplete) {
         Resources res = getResources();
-        int color = isComplete ? res.getColor(R.color.search_field_completed) : res.getColor(R.color.search_field_incomplete);
-        float textSize = isComplete ? res.getDimension( R.dimen.search_field_complete) : res.getDimension(R.dimen.search_field_incomplete);
+        int color = isComplete ? res.getColor(R.color.search_field_complete) : res.getColor(R.color.search_field_incomplete);
 
-        field.setBackgroundColor( color );
-        field.setTextSize( textSize );
+        field.setTextColor( color );
     }
 
 
