@@ -15,8 +15,9 @@
             android:layout_weight="1"
             android:inputType="textAutoComplete"
             android:hint="@string/search_where_from"
-            android:background="#fff"
+            android:background="@color/search_field_incomplete"
             android:elevation="3dp"
+            android:textSize="@dimen/search_field_incomplete"
             android:paddingLeft="12dp"
             android:paddingTop="8dp"
             android:paddingRight="12dp"
@@ -33,11 +34,13 @@
             android:inputType="textAutoComplete"
             android:hint="@string/search_where_to"
             android:layout_marginTop="8dp"
-            android:background="#fff"
+            android:textSize="@dimen/search_field_incomplete"
+            android:background="@color/search_field_incomplete"
             android:elevation="3dp"
             android:paddingLeft="12dp"
             android:paddingTop="8dp"
             android:paddingRight="12dp"
-            android:paddingBottom="8dp" />
+            android:paddingBottom="8dp"
+            />
 
 </LinearLayout>

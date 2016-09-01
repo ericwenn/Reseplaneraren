@@ -2,7 +2,7 @@ package se.ericwenn.reseplaneraren.ui.searchbar;
 
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -39,6 +39,9 @@ public class SearchFragment extends Fragment implements ISearchFragment {
     private OnSearchTermChangedListener mOriginSearchTermChangedListener;
     private OnSearchTermChangedListener mDestinationSearchTermChangedListener;
 
+    private boolean originIsFinal = false;
+    private boolean destinationIsFinal = false;
+
 
 
     public SearchFragment() {
@@ -69,6 +72,7 @@ public class SearchFragment extends Fragment implements ISearchFragment {
         Log.d(TAG, "onCreateView()");
         super.onCreateView(inflater, container, savedInstanceState);
 
+
         View v = inflater.inflate(R.layout.fragment_search, container, false);
 
         originInput = (EditText) v.findViewById(R.id.origin_input);
@@ -79,7 +83,6 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
         mOriginSearchTermChangedListener = new OnSearchTermChangedListener(FragmentController.Field.ORIGIN);
         mDestinationSearchTermChangedListener = new OnSearchTermChangedListener(FragmentController.Field.DESTINATION);
-
 
         return v;
     }
@@ -123,18 +126,25 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
     @Override
     public void setOriginLocation(ILocation origin) {
+        if( origin == null ) {
+            throw new IllegalArgumentException("Origin is null");
+        }
+        originIsFinal = true;
         originInput.removeTextChangedListener( mOriginSearchTermChangedListener );
         originInput.setText( origin.getName() );
         originInput.addTextChangedListener( mOriginSearchTermChangedListener);
-        originInput.setTextColor(Color.parseColor("green"));
+        setFieldCompletion( originInput, true);
     }
 
     @Override
     public void setDestinationLocation(ILocation destination) {
+        if (destination == null) {
+            throw new IllegalArgumentException("Destination is null");
+        }
         destinationInput.removeTextChangedListener( mDestinationSearchTermChangedListener );
         destinationInput.setText( destination.getName() );
         destinationInput.addTextChangedListener( mDestinationSearchTermChangedListener );
-        destinationInput.setTextColor(Color.parseColor("green"));
+        setFieldCompletion( destinationInput, true);
     }
 
     @Override
@@ -193,9 +203,21 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
         @Override
         public void afterTextChanged(Editable s) {
-
             mController.onSearchTermChanged( s.toString(), field);
+            EditText textField = field == FragmentController.Field.DESTINATION ? destinationInput : originInput;
+            setFieldCompletion( textField, false );
         }
+    }
+
+
+
+    private void setFieldCompletion(EditText field, boolean isComplete) {
+        Resources res = getResources();
+        int color = isComplete ? res.getColor(R.color.search_field_completed) : res.getColor(R.color.search_field_incomplete);
+        float textSize = isComplete ? res.getDimension( R.dimen.search_field_complete) : res.getDimension(R.dimen.search_field_incomplete);
+
+        field.setBackgroundColor( color );
+        field.setTextSize( textSize );
     }
 
 
