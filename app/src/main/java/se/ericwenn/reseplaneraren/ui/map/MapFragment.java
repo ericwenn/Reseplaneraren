@@ -2,6 +2,7 @@ package se.ericwenn.reseplaneraren.ui.map;
 
 
 import android.content.Context;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -28,6 +29,7 @@ import java.util.List;
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
 import se.ericwenn.reseplaneraren.ui.FragmentController;
+import se.ericwenn.reseplaneraren.ui.LocationProvider;
 import se.ericwenn.reseplaneraren.ui.map.sheet.ILocationBottomSheet;
 import se.ericwenn.reseplaneraren.ui.map.sheet.LocationBottomSheetFactory;
 
@@ -37,7 +39,7 @@ import se.ericwenn.reseplaneraren.ui.map.sheet.LocationBottomSheetFactory;
  * Use the {@link MapFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapFragment extends Fragment implements IMapFragment {
+public class MapFragment extends Fragment implements IMapFragment, LocationProvider.OnLocationChangedListener {
 
 
     private static final String TAG = "MapFragment";
@@ -48,6 +50,7 @@ public class MapFragment extends Fragment implements IMapFragment {
 
 
     private BiMap<ILocation, Marker> mMarkers = HashBiMap.create();
+    private LocationProvider mLocationProvider;
 
     public MapFragment() {
         // Required empty public constructor
@@ -59,8 +62,10 @@ public class MapFragment extends Fragment implements IMapFragment {
      *
      * @return A new instance of fragment MapFragment.
      */
-    public static MapFragment newInstance() {
-        return new MapFragment();
+    public static MapFragment newInstance(LocationProvider mLocationProvider) {
+        MapFragment fragment = new MapFragment();
+        fragment.mLocationProvider = mLocationProvider;
+        return fragment;
     }
 
 
@@ -96,7 +101,7 @@ public class MapFragment extends Fragment implements IMapFragment {
         Log.d(TAG, "onViewCreated()");
         super.onViewCreated(view, savedInstanceState);
 
-
+        mLocationProvider.setLocationChangedListener(this);
         mBottomSheet = LocationBottomSheetFactory.create();
 
         FragmentManager fm = getChildFragmentManager();
@@ -112,22 +117,19 @@ public class MapFragment extends Fragment implements IMapFragment {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
-
-                LatLng gothenburg = new LatLng(57.6906366, 11.9871087);
-
+                Location lastLocation = mLocationProvider.getLastLocation();
+                LatLng latLng = new LatLng( lastLocation.getLatitude(), lastLocation.getLongitude());
 
                 // TODO Pick the most appropriate zoom level
                 CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(14);
                 mMap.moveCamera(cameraUpdate);
 
 
-                mMap.addMarker(new MarkerOptions().position(gothenburg).title("Marker in Gothenburg"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(gothenburg));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
                 mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
-                        Log.d(TAG, "onMarkerClick() called with: " + "marker = [" + marker + "]");
                         ILocation loc = mMarkers.inverse().get(marker);
 
                         mBottomSheet.setLocation( loc );
@@ -199,7 +201,7 @@ public class MapFragment extends Fragment implements IMapFragment {
     }
 
     @Override
-    public void setCenter(long latitude, long longitude) {
+    public void setCenter(double latitude, double longitude) {
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude));
         mMap.moveCamera( cameraUpdate );
     }
@@ -210,4 +212,8 @@ public class MapFragment extends Fragment implements IMapFragment {
         mMap.moveCamera(cameraUpdate);
     }
 
+    @Override
+    public void onLocationChanged(Location newLocation) {
+        setCenter( newLocation.getLatitude(), newLocation.getLongitude());
+    }
 }

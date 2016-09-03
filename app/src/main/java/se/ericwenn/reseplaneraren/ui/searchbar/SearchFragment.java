@@ -57,7 +57,8 @@ public class SearchFragment extends Fragment implements ISearchFragment {
      * @return A new instance of fragment SearchFragment.
      */
     public static SearchFragment newInstance() {
-        return new SearchFragment();
+        SearchFragment fragment = new SearchFragment();
+        return fragment;
     }
 
     @Override

@@ -14,7 +14,7 @@ public interface IMapFragment {
     void removeMarkers( List<ILocation> markers );
     void removeMarker( ILocation marker );
 
-    void setCenter( long latitude, long longitude );
+    void setCenter( double latitude, double longitude );
 
     void setZoom( float zlevel );
 
