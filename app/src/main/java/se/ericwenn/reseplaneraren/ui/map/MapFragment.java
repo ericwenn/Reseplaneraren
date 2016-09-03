@@ -18,6 +18,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -32,6 +33,7 @@ import se.ericwenn.reseplaneraren.ui.FragmentController;
 import se.ericwenn.reseplaneraren.ui.LocationProvider;
 import se.ericwenn.reseplaneraren.ui.map.sheet.ILocationBottomSheet;
 import se.ericwenn.reseplaneraren.ui.map.sheet.LocationBottomSheetFactory;
+import se.ericwenn.reseplaneraren.util.DataPromise;
 
 
 /**
@@ -43,14 +45,20 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
 
 
     private static final String TAG = "MapFragment";
-    private GoogleMap mMap;
-    private FragmentController mController;
 
-    private ILocationBottomSheet mBottomSheet;
-
-
-    private BiMap<ILocation, Marker> mMarkers = HashBiMap.create();
+    // Injected
     private LocationProvider mLocationProvider;
+
+    // Injected
+    private MarkerProvider mMarkerProvider;
+
+    // MainActivity
+    private FragmentController mController;
+    private BiMap<ILocation, Marker> mMarkers = HashBiMap.create();
+
+
+    private GoogleMap mMap;
+    private ILocationBottomSheet mBottomSheet;
 
     public MapFragment() {
         // Required empty public constructor
@@ -62,8 +70,9 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
      *
      * @return A new instance of fragment MapFragment.
      */
-    public static MapFragment newInstance(LocationProvider mLocationProvider) {
+    public static MapFragment newInstance(LocationProvider mLocationProvider, MarkerProvider mMarkerProvider) {
         MapFragment fragment = new MapFragment();
+        fragment.mMarkerProvider = mMarkerProvider;
         fragment.mLocationProvider = mLocationProvider;
         return fragment;
     }
@@ -82,14 +91,12 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView()");
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_map, container, false);
@@ -98,14 +105,20 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onViewCreated()");
         super.onViewCreated(view, savedInstanceState);
 
         mLocationProvider.setLocationChangedListener(this);
         mBottomSheet = LocationBottomSheetFactory.create();
 
+        setupMap();
+
+    }
+
+    private void setupMap() {
         FragmentManager fm = getChildFragmentManager();
         SupportMapFragment mapFragment = (SupportMapFragment) fm.findFragmentByTag("mapFragment");
+
+
         if (mapFragment == null) {
             mapFragment = new SupportMapFragment();
             FragmentTransaction ft = fm.beginTransaction();
@@ -113,19 +126,53 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
             ft.commit();
             fm.executePendingTransactions();
         }
+
+
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
-                Location lastLocation = mLocationProvider.getLastLocation();
-                LatLng latLng = new LatLng( lastLocation.getLatitude(), lastLocation.getLongitude());
 
-                // TODO Pick the most appropriate zoom level
-                CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(14);
-                mMap.moveCamera(cameraUpdate);
+                mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+                    @Override
+                    public void onCameraChange(CameraPosition cameraPosition) {
+                        LatLng latLng = cameraPosition.target;
+
+                        DataPromise<List<ILocation>> markerPromise = mMarkerProvider.getMarkers(latLng.latitude, latLng.longitude);
+                        markerPromise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
+                            @Override
+                            public void onResolve(List<ILocation> data) {
+                                addMarkers( data );
+                            }
+                        });
+                    }
+                });
+
+                final Location lastLocation = mLocationProvider.getLastLocation();
+                setCenter( lastLocation.getLatitude(), lastLocation.getLongitude());
+                setZoom( 14f );
 
 
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                DataPromise<List<ILocation>> dataPromise = mMarkerProvider.getMarkers(lastLocation.getLatitude(), lastLocation.getLongitude());
+                dataPromise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
+                    @Override
+                    public void onResolve(List<ILocation> data) {
+                        addMarkers(data);
+                    }
+                });
+                dataPromise.onReject(new DataPromise.RejectedHandler<List<ILocation>>() {
+                    @Override
+                    public void onReject(Exception e) {
+                        DataPromise<List<ILocation>> promise = mMarkerProvider.getMarkers(lastLocation.getLatitude(), lastLocation.getLongitude());
+                        promise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
+                            @Override
+                            public void onResolve(List<ILocation> data) {
+                                addMarkers(data);
+                            }
+                        });
+                    }
+                });
+
 
                 mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
@@ -143,14 +190,7 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
 
             }
         });
-
-
-
-
     }
-
-
-
 
 
     @Override
@@ -181,9 +221,12 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
 
         }
         for( ILocation toMark : markers) {
-            MarkerOptions mo = new MarkerOptions().position( new LatLng( toMark.getLatitude(), toMark.getLongitude() ) ).title( toMark.getName() );
-            Marker m = mMap.addMarker( mo );
-            mMarkers.put( toMark, m);
+            if( !mMarkers.containsKey(toMark)) {
+                MarkerOptions mo = new MarkerOptions().position( new LatLng( toMark.getLatitude(), toMark.getLongitude() ) ).title( toMark.getName() );
+                Marker m = mMap.addMarker( mo );
+                mMarkers.put( toMark, m);
+
+            }
         }
     }
 

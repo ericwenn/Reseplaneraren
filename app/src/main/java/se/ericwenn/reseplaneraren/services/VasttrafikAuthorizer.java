@@ -60,7 +60,6 @@ public class VasttrafikAuthorizer implements IAuthorizer {
             Log.d(TAG, "authorize: Token is not valid, authorizing....");
             getToken(client, l);
         } else {
-            Log.d(TAG, "authorize: Token is valid");
             client.addHeader("Authorization", "Bearer "+token.getToken());
             l.onAuthorized(client);
         }
@@ -90,7 +89,6 @@ public class VasttrafikAuthorizer implements IAuthorizer {
 
             @Override
             public void onSuccess(String responseBody) {
-                Log.d(TAG, "onSuccess() called with: " + "responseBody = [" + responseBody + "]");
                 Gson g = new Gson();
                 token = g.fromJson(responseBody, VasttrafikToken.class);
                 token.calculateExpiresIn();
@@ -99,7 +97,6 @@ public class VasttrafikAuthorizer implements IAuthorizer {
                 client.addHeader("Authorization", "Bearer "+token.getToken());
 
 
-                Log.d(TAG, "onSuccess: Token=["+token.getToken()+"]");
                 l.onAuthorized(client);
             }
 

@@ -14,6 +14,7 @@ public class Location implements ILocation, Parcelable {
     public double lat;
     public String name;
     public String type;
+    public String track;
 
     @Override
     public String getName() {
@@ -50,6 +51,11 @@ public class Location implements ILocation, Parcelable {
     @Override
     public String getID() {
         return id;
+    }
+
+    @Override
+    public boolean isTrackSpecificLocation() {
+        return track != null;
     }
 
     @Override

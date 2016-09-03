@@ -19,11 +19,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
-import java.util.List;
-
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
-import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
 import se.ericwenn.reseplaneraren.model.data.trip.ITrip;
 import se.ericwenn.reseplaneraren.ui.locationsearch.ILocationSearchFragment;
 import se.ericwenn.reseplaneraren.ui.locationsearch.LocationSearchFragmentFactory;
@@ -33,7 +30,6 @@ import se.ericwenn.reseplaneraren.ui.result.ITripSearchFragment;
 import se.ericwenn.reseplaneraren.ui.result.TripSearchFragmentFactory;
 import se.ericwenn.reseplaneraren.ui.searchbar.ISearchFragment;
 import se.ericwenn.reseplaneraren.ui.searchbar.SearchFragmentFactory;
-import se.ericwenn.reseplaneraren.util.DataPromise;
 
 public class MainActivity extends FragmentActivity implements
         FragmentController, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -94,7 +90,8 @@ public class MainActivity extends FragmentActivity implements
         l.setLatitude(59.6906366);
         l.setLongitude(12.9871087);
         mLocationProvider = new LocationProvider(l);
-        mMapFragment = MapFragmentFactory.create( mLocationProvider );
+        MarkerProviderImpl markerProvider = new MarkerProviderImpl();
+        mMapFragment = MapFragmentFactory.create( mLocationProvider, markerProvider );
 
 
         final FrameLayout bottomSheetFrame = (FrameLayout) findViewById(R.id.bottomsheet_frame);
@@ -122,27 +119,6 @@ public class MainActivity extends FragmentActivity implements
         });
 
         mFragmentSwitcher.showFragment( (Fragment) mMapFragment );
-
-
-        DataPromise<List<ILocation>> promise = VasttrafikAPIBridge.getInstance().findNearbyStops( 57.6906366, 11.9871087, 20000);
-        promise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
-            @Override
-            public void onResolve(List<ILocation> data) {
-                mMapFragment.addMarkers( data );
-            }
-        });
-        promise.onReject(new DataPromise.RejectedHandler<List<ILocation>>() {
-            @Override
-            public void onReject(Exception e) {
-                DataPromise<List<ILocation>> promise = VasttrafikAPIBridge.getInstance().findNearbyStops( 57.6906366, 11.9871087, 2000);
-                promise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
-                    @Override
-                    public void onResolve(List<ILocation> data) {
-                        mMapFragment.addMarkers( data );
-                    }
-                });
-            }
-        });
 
 
     }

@@ -7,10 +7,8 @@ import se.ericwenn.reseplaneraren.ui.LocationProvider;
  */
 public class MapFragmentFactory {
 
-    private static final String TAG = "MapFragmentFactory";
-
-    public static IMapFragment create(LocationProvider locationProvider) {
-        return MapFragment.newInstance( locationProvider );
+    public static IMapFragment create(LocationProvider locationProvider, IMapFragment.MarkerProvider markerProvider) {
+        return MapFragment.newInstance( locationProvider, markerProvider );
     }
 
 }

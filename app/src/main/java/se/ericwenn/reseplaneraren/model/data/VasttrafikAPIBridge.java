@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -220,19 +221,22 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
                             JSONObject o = new JSONObject(responseBody);
                             String s = o.getJSONObject("LocationList").getString("StopLocation");
 
+                            Log.d(TAG, "onSuccess: "+s);
+
                             Gson g = new Gson();
 
                             locations = g.fromJson(s, new TypeToken<List<Location>>(){}.getType());
 
-                            // Locations returned contain same stop with different track, prefer only one per stop
-                            locations = Util.removeDuplicates(locations, new Util.DuplicateChecker<ILocation>() {
-                                @Override
-                                public Object uniqueAttribute(ILocation original) {
-                                    return original.getName();
+                            List<ILocation> uniqueLocations = new ArrayList<ILocation>();
+                            for( ILocation l : locations) {
+                                if( !l.isTrackSpecificLocation() ) {
+                                    uniqueLocations.add(l);
                                 }
-                            });
+                            }
 
-                            Log.d(TAG, "onSuccess: Fetched "+locations.size()+" locations from api.");
+                            locations = uniqueLocations;
+
+
 
                             promise.resolveData(locations);
 

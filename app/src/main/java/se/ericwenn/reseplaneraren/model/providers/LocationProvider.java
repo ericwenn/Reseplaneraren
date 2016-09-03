@@ -42,6 +42,11 @@ public class LocationProvider implements ILocationProvider {
             public String getID() {
                 return "01";
             }
+
+            @Override
+            public boolean isTrackSpecificLocation() {
+                return false;
+            }
         });
 
         favorites.add(new ILocation() {
@@ -68,6 +73,11 @@ public class LocationProvider implements ILocationProvider {
             @Override
             public String getID() {
                 return "02";
+            }
+
+            @Override
+            public boolean isTrackSpecificLocation() {
+                return false;
             }
         });
 
