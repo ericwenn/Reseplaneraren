@@ -1,52 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#ffffff"
-    android:padding="12dp">
-    <LinearLayout
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:layout_width="0px"
-        android:layout_height="0px"/>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:measureWithLargestChild="false"
-        android:clickable="false" >
-
+    android:weightSum="2"
+    android:padding="2dp"
+    android:clipToPadding="false">
         <EditText
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
             android:id="@+id/origin_input"
             android:layout_gravity="center"
             android:singleLine="true"
-            android:layout_weight="5"
+            android:layout_weight="1"
             android:inputType="textAutoComplete"
-            android:hint="@string/search_where_from" />
-    </LinearLayout>
+            android:hint="@string/search_where_from"
+            android:elevation="3dp"
+            tools:text="hjalm"
+            android:textSize="@dimen/search_field_text_size"
+            android:textColor="@color/search_field_incomplete"
+            android:paddingLeft="12dp"
+            android:paddingTop="8dp"
+            android:paddingRight="12dp"
+            android:paddingBottom="8dp"
+            android:background="#fff"/>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:measureWithLargestChild="false"
-        android:clickable="false">
 
         <EditText
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
             android:id="@+id/destination_input"
             android:layout_gravity="center"
             android:singleLine="true"
-            android:layout_weight="5"
+            android:layout_weight="1"
             android:inputType="textAutoComplete"
-            android:hint="@string/search_where_to"/>
+            android:hint="@string/search_where_to"
+            android:textColor="@color/search_field_complete"
+            tools:text="Hjalmar Brantingsplatsen"
+            android:layout_marginTop="8dp"
+            android:textSize="@dimen/search_field_text_size"
+            android:background="#fff"
+            android:elevation="3dp"
+            android:paddingLeft="12dp"
+            android:paddingTop="8dp"
+            android:paddingRight="12dp"
+            android:paddingBottom="8dp"
+            />
 
-    </LinearLayout>
 </LinearLayout>

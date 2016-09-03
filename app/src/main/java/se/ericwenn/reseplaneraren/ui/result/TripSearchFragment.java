@@ -9,16 +9,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
-import se.ericwenn.reseplaneraren.model.data.ITrip;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
+import se.ericwenn.reseplaneraren.model.data.trip.ITrip;
 import se.ericwenn.reseplaneraren.ui.FragmentController;
+import se.ericwenn.reseplaneraren.ui.shared.SimpleRecyclerViewDivider;
 import se.ericwenn.reseplaneraren.util.DataPromise;
 
 public class TripSearchFragment extends Fragment implements ITripSearchFragment {
@@ -47,7 +46,13 @@ public class TripSearchFragment extends Fragment implements ITripSearchFragment 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAdapter = new ResultAdapter();
+
+        mAdapter = new ResultAdapter(getActivity(), new TrackTripListener() {
+            @Override
+            public void onTrackTrip(ITrip t) {
+                mController.onTrackTrip(t);
+            }
+        });
 
     }
 
@@ -58,6 +63,7 @@ public class TripSearchFragment extends Fragment implements ITripSearchFragment 
         View v = inflater.inflate(R.layout.fragment_result, container, false);
         RecyclerView mRecyclerView = (RecyclerView) v.findViewById(R.id.result_recyclerview);
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.addItemDecoration( new SimpleRecyclerViewDivider(4));
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -71,7 +77,6 @@ public class TripSearchFragment extends Fragment implements ITripSearchFragment 
     @Override
     public void onAttach(Context context) {
 
-        Log.d(TAG, "onAttach()");
         super.onAttach(context);
 
         try {
@@ -83,19 +88,17 @@ public class TripSearchFragment extends Fragment implements ITripSearchFragment 
 
     @Override
     public void onDetach() {
-        Log.d(TAG, "onDetach()");
         super.onDetach();
     }
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume()");
         super.onResume();
     }
 
     @Override
     public void changeRoute(ILocation origin, ILocation destination) {
-
+        Log.d(TAG, "changeRoute() called with: " + "origin = [" + origin + "], destination = [" + destination + "]");
         originLocation = origin;
         destinationLocation = destination;
         performSearch();
@@ -120,55 +123,14 @@ public class TripSearchFragment extends Fragment implements ITripSearchFragment 
     }
 
 
-    private class ResultAdapter extends RecyclerView.Adapter {
-        private List<ITrip> mDataset = new ArrayList<>();
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public TextView mTripType;
-            public TextView mLegNames;
-            public ViewHolder(View itemView) {
-                super(itemView);
-
-                mTripType = (TextView) itemView.findViewById(R.id.trip_type);
-                mLegNames = (TextView) itemView.findViewById(R.id.trip_legnames);
-            }
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_trip, parent, false);
-            return new ViewHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            ITrip t = mDataset.get(position);
-
-            // Trip type
-            ((ViewHolder) holder).mTripType.setText( t.getArrivalTime().toString() );
-
-            // Trip leg names
-            String legNames = "";
-            for(se.ericwenn.reseplaneraren.model.data.ILeg l : t.getLegs()) {
-                legNames = legNames + "\r\n" + l.getName();
-            }
-
-            ((ViewHolder) holder).mLegNames.setText(legNames);
-        }
-
-        @Override
-        public int getItemCount() {
-            return mDataset.size();
-        }
 
 
-        public void updateDataset( List<ITrip> newDataset ) {
-            mDataset = newDataset;
-            notifyDataSetChanged();
 
 
-        }
-    }
+
+
+
+
 
 
 

@@ -10,6 +10,7 @@ public interface ILocation {
     Double getLongitude();
     LocationType getLocationType();
     String getID();
+    boolean isTrackSpecificLocation();
 
 
     enum LocationType {

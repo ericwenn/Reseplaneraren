@@ -2,7 +2,7 @@ package se.ericwenn.reseplaneraren.ui.searchbar;
 
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -39,6 +39,9 @@ public class SearchFragment extends Fragment implements ISearchFragment {
     private OnSearchTermChangedListener mOriginSearchTermChangedListener;
     private OnSearchTermChangedListener mDestinationSearchTermChangedListener;
 
+    private boolean originIsFinal = false;
+    private boolean destinationIsFinal = false;
+
 
 
     public SearchFragment() {
@@ -54,7 +57,8 @@ public class SearchFragment extends Fragment implements ISearchFragment {
      * @return A new instance of fragment SearchFragment.
      */
     public static SearchFragment newInstance() {
-        return new SearchFragment();
+        SearchFragment fragment = new SearchFragment();
+        return fragment;
     }
 
     @Override
@@ -69,17 +73,20 @@ public class SearchFragment extends Fragment implements ISearchFragment {
         Log.d(TAG, "onCreateView()");
         super.onCreateView(inflater, container, savedInstanceState);
 
+
         View v = inflater.inflate(R.layout.fragment_search, container, false);
 
         originInput = (EditText) v.findViewById(R.id.origin_input);
-        destinationInput = (EditText) v.findViewById(R.id.destination_input);
+        originInput.setSelectAllOnFocus(true);
 
+        destinationInput = (EditText) v.findViewById(R.id.destination_input);
+        destinationInput.setSelectAllOnFocus(true);
+        
         mOriginFocusChangeListener = new OnFocusChangeListener(FragmentController.Field.ORIGIN);
         mDestinationFocusChangeListener = new OnFocusChangeListener(FragmentController.Field.DESTINATION);
 
         mOriginSearchTermChangedListener = new OnSearchTermChangedListener(FragmentController.Field.ORIGIN);
         mDestinationSearchTermChangedListener = new OnSearchTermChangedListener(FragmentController.Field.DESTINATION);
-
 
         return v;
     }
@@ -123,23 +130,36 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
     @Override
     public void setOriginLocation(ILocation origin) {
+        Log.d(TAG, "setOriginLocation() called with: " + "origin = [" + origin + "]");
+        if( origin == null ) {
+            throw new IllegalArgumentException("Origin is null");
+        }
+        originIsFinal = true;
         originInput.removeTextChangedListener( mOriginSearchTermChangedListener );
         originInput.setText( origin.getName() );
         originInput.addTextChangedListener( mOriginSearchTermChangedListener);
-        originInput.setTextColor(Color.parseColor("green"));
+        setFieldCompletion( originInput, true);
     }
 
     @Override
     public void setDestinationLocation(ILocation destination) {
+        Log.d(TAG, "setDestinationLocation() called with: " + "destination = [" + destination + "]");
+        if (destination == null) {
+            throw new IllegalArgumentException("Destination is null");
+        }
         destinationInput.removeTextChangedListener( mDestinationSearchTermChangedListener );
         destinationInput.setText( destination.getName() );
         destinationInput.addTextChangedListener( mDestinationSearchTermChangedListener );
-        destinationInput.setTextColor(Color.parseColor("green"));
+        setFieldCompletion( destinationInput, true);
     }
 
     @Override
     public void focusField(FragmentController.Field f) {
-
+        if( f == FragmentController.Field.ORIGIN ) {
+            originInput.requestFocus();
+        } else {
+            destinationInput.requestFocus();
+        }
     }
 
     @Override
@@ -163,7 +183,8 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
-            if( hasFocus ) {
+            boolean isFinal = field == FragmentController.Field.DESTINATION ? destinationIsFinal : originIsFinal;
+            if( hasFocus && !isFinal) {
                 mController.onSearchTermChanged( ((EditText) v).getText().toString(), field);
             }
         }
@@ -189,9 +210,19 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
         @Override
         public void afterTextChanged(Editable s) {
-
             mController.onSearchTermChanged( s.toString(), field);
+            EditText textField = field == FragmentController.Field.DESTINATION ? destinationInput : originInput;
+            setFieldCompletion( textField, false );
         }
+    }
+
+
+
+    private void setFieldCompletion(EditText field, boolean isComplete) {
+        Resources res = getResources();
+        int color = isComplete ? res.getColor(R.color.search_field_complete) : res.getColor(R.color.search_field_incomplete);
+
+        field.setTextColor( color );
     }
 
 
