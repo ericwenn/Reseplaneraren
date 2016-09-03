@@ -174,6 +174,9 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public void onLocationSelected(ILocation l, Field f) {
+        if (l == null) {
+            throw new IllegalArgumentException("Location cant be null");
+        }
         Log.d(TAG, "onLocationSelected() called with: " + "l = [" + l + "], f = [" + f + "]");
         updateCurrentLocation(l, f);
         Log.d(TAG, "onLocationSelected() Origin: ["+mOrigin+"] Destination: ["+mDestination+"]");

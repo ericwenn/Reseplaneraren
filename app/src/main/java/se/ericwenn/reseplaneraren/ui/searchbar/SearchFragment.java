@@ -130,6 +130,7 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
     @Override
     public void setOriginLocation(ILocation origin) {
+        Log.d(TAG, "setOriginLocation() called with: " + "origin = [" + origin + "]");
         if( origin == null ) {
             throw new IllegalArgumentException("Origin is null");
         }
@@ -142,6 +143,7 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
     @Override
     public void setDestinationLocation(ILocation destination) {
+        Log.d(TAG, "setDestinationLocation() called with: " + "destination = [" + destination + "]");
         if (destination == null) {
             throw new IllegalArgumentException("Destination is null");
         }
@@ -181,7 +183,8 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
-            if( hasFocus ) {
+            boolean isFinal = field == FragmentController.Field.DESTINATION ? destinationIsFinal : originIsFinal;
+            if( hasFocus && !isFinal) {
                 mController.onSearchTermChanged( ((EditText) v).getText().toString(), field);
             }
         }
