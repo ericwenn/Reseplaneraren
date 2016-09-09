@@ -50,7 +50,11 @@ public class JaroWinkelSimilarityEvaluator implements StringSimilarityEvaluator<
 
 
         for (NameSortable sortable : toEvaluate) {
-            resultMap.put( sortable, similarity(sortable.getName(), similarityTo));
+            double similarity = similarityTo == null || sortable.getName() == null ? 0 : similarity( sortable.getName(), similarityTo);
+            if (similarityTo == null) {
+                similarity = 0;
+            }
+            resultMap.put( sortable, similarity);
         }
         return resultMap;
     }
