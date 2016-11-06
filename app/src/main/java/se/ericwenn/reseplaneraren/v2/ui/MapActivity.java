@@ -28,7 +28,7 @@ import se.ericwenn.reseplaneraren.v2.ui.search_bar.SearchFragmentController;
 
 public class MapActivity extends AppCompatActivity implements SearchFragmentController, LocationSearchFragmentController {
     private static final int SEARCH_BAR_FRAME = R.id.search_bar_frame;
-    private static final int SEARCH_BAR_OUTERHEIGHT_DP = 136;
+    private static final int SEARCH_BAR_OUTERHEIGHT_DP = 192;
     private static final String TAG = "MapActivity";
     private ILocationSearchFragment mLocationSearchFragment;
     private BottomSheetBehavior<FrameLayout> mBottomSheetBehavior;

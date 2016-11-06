@@ -51,8 +51,9 @@
             />
         <Button
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:id="@+id/search_button"
-            android:text="@string/search"/>
+            android:text="@string/search"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"/>
 
 </LinearLayout>

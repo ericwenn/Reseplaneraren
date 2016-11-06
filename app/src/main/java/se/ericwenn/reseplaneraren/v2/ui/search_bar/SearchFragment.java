@@ -4,8 +4,7 @@ package se.ericwenn.reseplaneraren.v2.ui.search_bar;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +33,7 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
     private ILocationSearchField originSearchField;
     private ILocationSearchField destinationSearchField;
-
+    private Button searchButton;
 
 
     public SearchFragment() {
@@ -73,6 +72,7 @@ public class SearchFragment extends Fragment implements ISearchFragment {
             @Override
             public void searchChanged(String searchTerm) {
                 mController.originChanged(searchTerm);
+                updateSearchState();
             }
         });
 
@@ -82,16 +82,18 @@ public class SearchFragment extends Fragment implements ISearchFragment {
             @Override
             public void searchChanged(String searchTerm) {
                 mController.destinationChanged(searchTerm);
+                updateSearchState();
             }
         });
 
 
-        Button searchButton = (Button) v.findViewById(R.id.search_button);
+        searchButton = (Button) v.findViewById(R.id.search_button);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             }
         });
+        updateSearchState();
         return v;
     }
 
@@ -104,8 +106,15 @@ public class SearchFragment extends Fragment implements ISearchFragment {
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume() called");
         destinationSearchField.start();
         originSearchField.start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause() called");
     }
 
     @Override
@@ -128,11 +137,32 @@ public class SearchFragment extends Fragment implements ISearchFragment {
         // Change text of origin field
         // If both origin and destination are final, enable the searchbutton
         originSearchField.setFinal(origin);
+        updateSearchState();
     }
 
     @Override
     public void setDestinationLocation(ILocation destination) {
         destinationSearchField.setFinal(destination);
+        updateSearchState();
+    }
+
+
+    private void updateSearchState() {
+        if( destinationSearchField.isFinal() && originSearchField.isFinal()) {
+            enableSearch();
+        } else {
+            disableSearch();
+        }
+    }
+
+    private void disableSearch() {
+        searchButton.setAlpha(0.5f);
+        searchButton.setClickable(false);
+    }
+
+    private void enableSearch() {
+        searchButton.setAlpha(1f);
+        searchButton.setClickable(false);
     }
 
 

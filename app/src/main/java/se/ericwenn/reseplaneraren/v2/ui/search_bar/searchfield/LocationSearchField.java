@@ -35,8 +35,8 @@ public class LocationSearchField implements ILocationSearchField{
             @Override
             public void afterTextChanged(Editable s) {
                 searchTerm = s.toString();
-                listener.searchChanged(searchTerm);
                 finalLocation = null;
+                listener.searchChanged(searchTerm);
             }
         };
     }
@@ -71,6 +71,9 @@ public class LocationSearchField implements ILocationSearchField{
     @Override
     public void setFinal(ILocation finalLoc) {
         finalLocation = finalLoc;
+        this.stop();
+        textField.setText( finalLoc.getName());
+        this.start();
     }
 
 }
