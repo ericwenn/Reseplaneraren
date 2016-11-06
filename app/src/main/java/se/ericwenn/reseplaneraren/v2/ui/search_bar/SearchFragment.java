@@ -118,8 +118,8 @@ public class SearchFragment extends Fragment implements ISearchFragment {
     @Override
     public void onPause() {
         super.onPause();
-        destinationSearchField.start();
-        originSearchField.start();
+        destinationSearchField.stop();
+        originSearchField.stop();
         Log.d(TAG, "onPause() called");
 
     }
@@ -143,18 +143,23 @@ public class SearchFragment extends Fragment implements ISearchFragment {
     public void setOriginLocation(ILocation origin) {
         // Change text of origin field
         // If both origin and destination are final, enable the searchbutton
+        Log.d(TAG, "setOriginLocation() called with: origin = [" + origin + "]");
         originSearchField.setFinal(origin);
         updateSearchState();
     }
 
     @Override
     public void setDestinationLocation(ILocation destination) {
+        Log.d(TAG, "setDestinationLocation() called with: destination = [" + destination + "]");
         destinationSearchField.setFinal(destination);
         updateSearchState();
     }
 
 
     private void updateSearchState() {
+        Log.d(TAG, "updateSearchState: Origin is final: "+ originSearchField.isFinal());
+        Log.d(TAG, "updateSearchState: Destination is final: "+ destinationSearchField.isFinal());
+
         if( destinationSearchField.isFinal() && originSearchField.isFinal()) {
             enableSearch();
         } else {
