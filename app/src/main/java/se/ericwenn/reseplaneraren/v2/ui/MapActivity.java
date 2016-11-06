@@ -116,6 +116,8 @@ public class MapActivity extends AppCompatActivity implements SearchFragmentCont
         return searchFragment;
     }
 
+
+
     @Override
     public void originChanged(String searchTerm) {
         Log.d(TAG, "originChanged() called with: " + "searchTerm = [" + searchTerm + "]");
@@ -129,8 +131,8 @@ public class MapActivity extends AppCompatActivity implements SearchFragmentCont
     }
 
     @Override
-    public void search() {
-        Log.d(TAG, "search() called");
+    public void search(ILocation origin, ILocation destination) {
+        Log.d(TAG, "search() called with: origin = [" + origin + "], destination = [" + destination + "]");
     }
 
     @Override

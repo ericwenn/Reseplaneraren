@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,9 @@ import android.widget.EditText;
 
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
+import se.ericwenn.reseplaneraren.v2.ui.search_bar.searchfield.ILocationSearchField;
+import se.ericwenn.reseplaneraren.v2.ui.search_bar.searchfield.LocationSearchField;
+import se.ericwenn.reseplaneraren.v2.ui.search_bar.searchfield.LocationSearchFieldListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,8 +30,12 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
     private static final String TAG = "SearchFragment";
     private SearchFragmentController mController;
-    private FieldWrapper originListener;
-    private FieldWrapper destinationListener;
+
+
+    private ILocationSearchField originSearchField;
+    private ILocationSearchField destinationSearchField;
+
+
 
     public SearchFragment() {
         // Required empty public constructor
@@ -63,39 +69,27 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
 
         EditText originInput = (EditText) v.findViewById(R.id.origin_input);
-        originInput.setSelectAllOnFocus(true);
-        originListener = new FieldWrapper(originInput, new FieldListener() {
+        originSearchField = new LocationSearchField(originInput, new LocationSearchFieldListener() {
             @Override
-            public void onSearchTermChanged(String searchTerm) {
+            public void searchChanged(String searchTerm) {
                 mController.originChanged(searchTerm);
-            }
-
-            @Override
-            public void onFocusGained() {
-                Log.d(TAG, "onFocusGained() called with: " + "");
             }
         });
 
 
         EditText destinationInput = (EditText) v.findViewById(R.id.destination_input);
-        destinationInput.setSelectAllOnFocus(true);
-        destinationListener = new FieldWrapper(destinationInput, new FieldListener() {
+        destinationSearchField = new LocationSearchField(destinationInput, new LocationSearchFieldListener() {
             @Override
-            public void onSearchTermChanged(String searchTerm) {
+            public void searchChanged(String searchTerm) {
                 mController.destinationChanged(searchTerm);
             }
-
-            @Override
-            public void onFocusGained() {
-                Log.d(TAG, "onFocusGained() called with: " + "");
-            }
         });
+
 
         Button searchButton = (Button) v.findViewById(R.id.search_button);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mController.search();
             }
         });
         return v;
@@ -110,8 +104,8 @@ public class SearchFragment extends Fragment implements ISearchFragment {
     @Override
     public void onResume() {
         super.onResume();
-        originListener.start();
-        destinationListener.start();
+        destinationSearchField.start();
+        originSearchField.start();
     }
 
     @Override
@@ -131,66 +125,17 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
     @Override
     public void setOriginLocation(ILocation origin) {
-        originListener.setFinal(origin);
+        // Change text of origin field
+        // If both origin and destination are final, enable the searchbutton
+        originSearchField.setFinal(origin);
     }
 
     @Override
     public void setDestinationLocation(ILocation destination) {
-        destinationListener.setFinal(destination);
-
+        destinationSearchField.setFinal(destination);
     }
 
 
-    private class FieldWrapper {
-        private final EditText field;
-        private final FieldListener listener;
-        private boolean isFinal = false;
-        private TextWatcher onChangeListener;
-
-        public FieldWrapper(EditText field, final FieldListener listener) {
-            this.field = field;
-            this.listener = listener;
-
-
-            this.onChangeListener = new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    listener.onSearchTermChanged(s.toString());
-                    isFinal = false;
-                }
-            };
-        }
-
-        public void start() {
-            this.field.addTextChangedListener(this.onChangeListener);
-        }
-
-        public void stop() {
-            this.field.removeTextChangedListener(this.onChangeListener);
-        }
-
-        public void setFinal( ILocation l) {
-            this.stop();
-            field.setText( l.getName() );
-            isFinal = true;
-            this.start();
-        }
-
-    }
-
-    private interface FieldListener {
-        void onSearchTermChanged(String searchTerm);
-        void onFocusGained();
-    }
 
 
 }
