@@ -1,13 +1,11 @@
 package se.ericwenn.reseplaneraren.model.data;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 
 /**
  * Created by ericwenn on 7/14/16.
  */
-public class Location implements ILocation, Parcelable {
+public class Location implements ILocation {
     private static final String TAG = "Location";
     public String id;
     public double lon;
@@ -85,6 +83,7 @@ public class Location implements ILocation, Parcelable {
         return result;
     }
 
+    /*
 
     protected Location(Parcel in) {
         id = in.readString();
@@ -121,4 +120,5 @@ public class Location implements ILocation, Parcelable {
             return new Location[size];
         }
     };
+    */
 }

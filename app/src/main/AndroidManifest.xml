@@ -33,12 +33,21 @@
         <activity
             android:name=".v2.ui.MapActivity"
             android:label="@string/title_activity_map"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".v2.ui.ResultActivity"
+            android:label="@string/title_activity_result"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 

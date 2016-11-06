@@ -1,5 +1,6 @@
 package se.ericwenn.reseplaneraren.v2.ui;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -133,6 +134,11 @@ public class MapActivity extends AppCompatActivity implements SearchFragmentCont
     @Override
     public void search(ILocation origin, ILocation destination) {
         Log.d(TAG, "search() called with: origin = [" + origin + "], destination = [" + destination + "]");
+        Intent intent = new Intent(this, ResultActivity.class);
+        intent.putExtra(ResultActivity.ORIGIN_EXTRA, origin);
+        intent.putExtra(ResultActivity.DESTINATION_EXTRA, destination);
+
+        startActivity(intent);
     }
 
     @Override

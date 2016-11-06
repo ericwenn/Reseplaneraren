@@ -91,6 +91,9 @@ public class SearchFragment extends Fragment implements ISearchFragment {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if( destinationSearchField.isFinal() && originSearchField.isFinal()) {
+                    mController.search(originSearchField.getFinalLocation(), destinationSearchField.getFinalLocation());
+                }
             }
         });
         updateSearchState();
@@ -103,6 +106,7 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
@@ -114,7 +118,10 @@ public class SearchFragment extends Fragment implements ISearchFragment {
     @Override
     public void onPause() {
         super.onPause();
+        destinationSearchField.start();
+        originSearchField.start();
         Log.d(TAG, "onPause() called");
+
     }
 
     @Override
@@ -162,7 +169,7 @@ public class SearchFragment extends Fragment implements ISearchFragment {
 
     private void enableSearch() {
         searchButton.setAlpha(1f);
-        searchButton.setClickable(false);
+        searchButton.setClickable(true);
     }
 
 
