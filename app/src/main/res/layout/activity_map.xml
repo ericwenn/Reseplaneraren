@@ -16,4 +16,12 @@
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"/>
 
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:id="@+id/bottomsheet_frame"
+        app:layout_behavior="@string/bottom_sheet_behavior"/>
+
 </android.support.design.widget.CoordinatorLayout>
