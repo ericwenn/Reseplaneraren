@@ -30,6 +30,8 @@ import java.util.List;
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
 import se.ericwenn.reseplaneraren.ui.LocationProvider;
+import se.ericwenn.reseplaneraren.ui.MarkerProviderImpl;
+import se.ericwenn.reseplaneraren.util.DataPromise;
 import se.ericwenn.reseplaneraren.v2.ui.map.sheet.ILocationBottomSheet;
 import se.ericwenn.reseplaneraren.v2.ui.map.sheet.LocationBottomSheetFactory;
 
@@ -52,6 +54,7 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
 
     private GoogleMap mMap;
     private ILocationBottomSheet mBottomSheet;
+    private MarkerProviderImpl mMarkerProvider;
 
     public MapFragment() {
         // Required empty public constructor
@@ -83,6 +86,10 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mMarkerProvider = new MarkerProviderImpl();
+
+
+
     }
 
     @Override
@@ -128,7 +135,6 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
                     public void onCameraChange(CameraPosition cameraPosition) {
                         LatLng latLng = cameraPosition.target;
 
-                        /*
                         DataPromise<List<ILocation>> markerPromise = mMarkerProvider.getMarkers(latLng.latitude, latLng.longitude);
                         markerPromise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
                             @Override
@@ -136,7 +142,6 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
                                 addMarkers( data );
                             }
                         });
-                        */
                     }
                 });
 
@@ -146,27 +151,9 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
                 */
                 setZoom( 14f );
 
-                /*
-                DataPromise<List<ILocation>> dataPromise = mMarkerProvider.getMarkers(lastLocation.getLatitude(), lastLocation.getLongitude());
-                dataPromise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
-                    @Override
-                    public void onResolve(List<ILocation> data) {
-                        addMarkers(data);
-                    }
-                });
-                dataPromise.onReject(new DataPromise.RejectedHandler<List<ILocation>>() {
-                    @Override
-                    public void onReject(Exception e) {
-                        DataPromise<List<ILocation>> promise = mMarkerProvider.getMarkers(lastLocation.getLatitude(), lastLocation.getLongitude());
-                        promise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
-                            @Override
-                            public void onResolve(List<ILocation> data) {
-                                addMarkers(data);
-                            }
-                        });
-                    }
-                });
-                */
+
+
+
 
 
                 mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {

@@ -1,11 +1,15 @@
 package se.ericwenn.reseplaneraren.v2.ui;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Point;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -16,6 +20,10 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
@@ -30,14 +38,14 @@ import se.ericwenn.reseplaneraren.v2.ui.search_bar.ISearchFragment;
 import se.ericwenn.reseplaneraren.v2.ui.search_bar.SearchFragment;
 import se.ericwenn.reseplaneraren.v2.ui.search_bar.SearchFragmentController;
 
-public class MapActivity extends AppCompatActivity implements SearchFragmentController, LocationSearchFragmentController, MapFragmentController {
+public class MapActivity extends AppCompatActivity implements SearchFragmentController, LocationSearchFragmentController, MapFragmentController, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static final int SEARCH_BAR_FRAME = R.id.search_bar_frame;
     private static final int MAP_FRAME = R.id.map_frame;
     private static final int SEARCH_BAR_OUTERHEIGHT_DP = 192;
     private static final String TAG = "MapActivity";
     private ILocationSearchFragment mLocationSearchFragment;
     private BottomSheetBehavior<FrameLayout> mBottomSheetBehavior;
-    private IMapFragment mMapFragment;
+    private GoogleApiClient mGoogleApiClient;
 
 
     @Override
@@ -45,9 +53,42 @@ public class MapActivity extends AppCompatActivity implements SearchFragmentCont
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+
+        setupGoogleApi();
         setupSearchBar();
         setupLocationSearchBottomSheet();
         setupMap();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
+    }
+
+    @Override
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+
+
+    private void setupGoogleApi() {
+        if( mGoogleApiClient == null ) {
+            mGoogleApiClient = new GoogleApiClient.Builder( getApplicationContext())
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
     }
 
     private void setupMap() {
@@ -174,4 +215,48 @@ public class MapActivity extends AppCompatActivity implements SearchFragmentCont
         }
         Log.d(TAG, "onLocationSelected() called with: " + "l = [" + l + "], field = [" + field + "]");
     }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.d(TAG, "onConnected() called with: bundle = [" + bundle + "]");
+        updateMapLocation();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d(TAG, "onConnectionSuspended() called with: i = [" + i + "]");
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG, "onConnectionFailed() called with: connectionResult = [" + connectionResult + "]");
+    }
+
+
+
+
+    private void updateMapLocation() {
+        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            final int REQUEST_LOCATION = 2;
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+        } else {
+            Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            //mLocationProvider.updateLocation( lastLocation );
+            getMapFragment().setCenter( lastLocation.getLatitude(), lastLocation.getLongitude());
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 2) {
+            if(grantResults.length == 1
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // We can now safely use the API we requested access to
+                updateMapLocation();
+            } else {
+                // Permission was denied or request was cancelled
+            }
+        }
+    }
+
 }

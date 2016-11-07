@@ -22,8 +22,9 @@ import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.IDeparture;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
-import se.ericwenn.reseplaneraren.ui.FragmentController;
 import se.ericwenn.reseplaneraren.util.DataPromise;
+import se.ericwenn.reseplaneraren.v2.SearchField;
+import se.ericwenn.reseplaneraren.v2.ui.map.MapFragmentController;
 
 /**
  * Created by ericwenn on 8/4/16.
@@ -33,7 +34,7 @@ public class LocationBottomSheet extends BottomSheetDialogFragment implements IL
     private static final String TAG = "LocationBottomSheet";
     private ILocation mLocation;
     private DepartureAdapter mAdapter;
-    private FragmentController mController;
+    private MapFragmentController mController;
 
 
     @Override
@@ -41,9 +42,9 @@ public class LocationBottomSheet extends BottomSheetDialogFragment implements IL
         super.onAttach(activity);
         Log.d(TAG, "onAttach()");
         try {
-            mController = (FragmentController) activity;
+            mController = (MapFragmentController) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException( activity.toString() + " must implement FragmentController");
+            throw new ClassCastException( activity.toString() + " must implement MapFragmentController");
         }
     }
 
@@ -90,7 +91,7 @@ public class LocationBottomSheet extends BottomSheetDialogFragment implements IL
         mTravelFromHereButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mController.onLocationSelected( mLocation, FragmentController.Field.ORIGIN);
+                mController.onLocationSelected( mLocation, SearchField.ORIGIN);
                 dismiss();
 
             }
@@ -99,7 +100,7 @@ public class LocationBottomSheet extends BottomSheetDialogFragment implements IL
         mTravelToHereButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mController.onLocationSelected( mLocation, FragmentController.Field.DESTINATION);
+                mController.onLocationSelected( mLocation, SearchField.DESTINATION);
                 dismiss();
             }
         });
@@ -107,7 +108,7 @@ public class LocationBottomSheet extends BottomSheetDialogFragment implements IL
         starLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mController.starLocation( mLocation );
+                //mController.starLocation( mLocation );
             }
         });
 
