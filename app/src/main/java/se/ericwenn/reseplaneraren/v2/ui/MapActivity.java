@@ -23,17 +23,21 @@ import se.ericwenn.reseplaneraren.v2.SearchField;
 import se.ericwenn.reseplaneraren.v2.ui.locationsearch.ILocationSearchFragment;
 import se.ericwenn.reseplaneraren.v2.ui.locationsearch.LocationSearchFragmentController;
 import se.ericwenn.reseplaneraren.v2.ui.locationsearch.LocationSearchFragmentFactory;
+import se.ericwenn.reseplaneraren.v2.ui.map.IMapFragment;
+import se.ericwenn.reseplaneraren.v2.ui.map.MapFragmentController;
+import se.ericwenn.reseplaneraren.v2.ui.map.MapFragmentFactory;
 import se.ericwenn.reseplaneraren.v2.ui.search_bar.ISearchFragment;
 import se.ericwenn.reseplaneraren.v2.ui.search_bar.SearchFragment;
 import se.ericwenn.reseplaneraren.v2.ui.search_bar.SearchFragmentController;
 
-public class MapActivity extends AppCompatActivity implements SearchFragmentController, LocationSearchFragmentController {
+public class MapActivity extends AppCompatActivity implements SearchFragmentController, LocationSearchFragmentController, MapFragmentController {
     private static final int SEARCH_BAR_FRAME = R.id.search_bar_frame;
+    private static final int MAP_FRAME = R.id.map_frame;
     private static final int SEARCH_BAR_OUTERHEIGHT_DP = 192;
     private static final String TAG = "MapActivity";
     private ILocationSearchFragment mLocationSearchFragment;
     private BottomSheetBehavior<FrameLayout> mBottomSheetBehavior;
-
+    private IMapFragment mMapFragment;
 
 
     @Override
@@ -43,6 +47,23 @@ public class MapActivity extends AppCompatActivity implements SearchFragmentCont
 
         setupSearchBar();
         setupLocationSearchBottomSheet();
+        setupMap();
+    }
+
+    private void setupMap() {
+        getMapFragment();
+    }
+
+    private IMapFragment getMapFragment() {
+        IMapFragment mapFragment = (IMapFragment) getSupportFragmentManager().findFragmentByTag("MapFragment");
+        if (mapFragment == null) {
+            mapFragment = MapFragmentFactory.create();
+
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.add( MAP_FRAME, (Fragment)mapFragment, "MapFragment");
+            fragmentTransaction.commit();
+        }
+        return mapFragment;
     }
 
     private void setupLocationSearchBottomSheet() {
@@ -147,6 +168,9 @@ public class MapActivity extends AppCompatActivity implements SearchFragmentCont
             getSearchFragment().setOriginLocation(l);
         } else {
             getSearchFragment().setDestinationLocation(l);
+        }
+        if( mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
         Log.d(TAG, "onLocationSelected() called with: " + "l = [" + l + "], field = [" + field + "]");
     }

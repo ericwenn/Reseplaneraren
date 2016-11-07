@@ -1,5 +1,6 @@
 package se.ericwenn.reseplaneraren.v2.ui.search_bar.searchfield;
 
+import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
@@ -17,7 +18,7 @@ public class LocationSearchField implements ILocationSearchField {
     private EditText textField;
 
 
-    public LocationSearchField(EditText textField, final LocationSearchFieldListener listener) {
+    public LocationSearchField(final EditText textField, final LocationSearchFieldListener listener) {
         this.textField = textField;
         this.textField.setSelectAllOnFocus(true);
 
@@ -36,6 +37,7 @@ public class LocationSearchField implements ILocationSearchField {
             public void afterTextChanged(Editable s) {
                 searchTerm = s.toString();
                 finalLocation = null;
+                textField.setTypeface(null, Typeface.NORMAL);
                 listener.searchChanged(searchTerm);
             }
         };
@@ -72,6 +74,7 @@ public class LocationSearchField implements ILocationSearchField {
     public void setFinal(ILocation finalLoc) {
         finalLocation = finalLoc;
         this.stop();
+        textField.setTypeface(null, Typeface.ITALIC);
         textField.setText( finalLoc.getName());
         this.start();
     }

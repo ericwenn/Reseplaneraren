@@ -167,6 +167,12 @@ public class SearchFragment extends Fragment implements ISearchFragment {
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSaveInstanceState() called with: outState = [" + outState + "]");
+    }
+
     private void disableSearch() {
         searchButton.setAlpha(0.5f);
         searchButton.setClickable(false);
