@@ -10,7 +10,7 @@ import se.ericwenn.reseplaneraren.model.data.ILocation;
  * Created by ericwenn on 11/6/16.
  */
 
-public class LocationSearchField implements ILocationSearchField{
+public class LocationSearchField implements ILocationSearchField {
     private final TextWatcher onChangeListener;
     private String searchTerm = "";
     private ILocation finalLocation = null;
