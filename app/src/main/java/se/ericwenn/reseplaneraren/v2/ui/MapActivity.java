@@ -195,7 +195,7 @@ public class MapActivity extends AppCompatActivity implements SearchFragmentCont
 
     @Override
     public void search(ILocation origin, ILocation destination) {
-        Log.d(TAG, "search() called with: origin = [" + origin + "], destination = [" + destination + "]");
+        Log.d(TAG, "search() called with: origin = [" + origin.getName() + "], destination = [" + destination.getName() + "]");
         Intent intent = new Intent(this, ResultActivity.class);
         intent.putExtra(ResultActivity.ORIGIN_EXTRA, origin);
         intent.putExtra(ResultActivity.DESTINATION_EXTRA, destination);

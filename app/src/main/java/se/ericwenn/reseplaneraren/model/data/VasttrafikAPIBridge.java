@@ -30,7 +30,6 @@ import se.ericwenn.reseplaneraren.services.IRestClient;
 import se.ericwenn.reseplaneraren.services.VasttrafikAuthorizer;
 import se.ericwenn.reseplaneraren.util.DataPromise;
 import se.ericwenn.reseplaneraren.util.DataPromiseImpl;
-import se.ericwenn.reseplaneraren.util.Util;
 
 /**
  * Created by ericwenn on 7/20/16.
@@ -62,6 +61,8 @@ public class VasttrafikAPIBridge extends AbstractVasttrafikAPIBridge {
         if( to == null ) {
             throw new IllegalArgumentException("Destination cant be null");
         }
+
+        Log.d(TAG, "getTrips: Searching trips from ["+from.getName()+"] to ["+to.getName()+"]");
 
         final DataPromiseImpl<List<ITrip>> promise = new DataPromiseImpl<>();
 

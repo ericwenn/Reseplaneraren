@@ -92,6 +92,7 @@ public class SearchFragment extends Fragment implements ISearchFragment {
             @Override
             public void onClick(View v) {
                 if( destinationSearchField.isFinal() && originSearchField.isFinal()) {
+                    Log.d(TAG, "onClick: origin = ["+originSearchField.getFinalLocation().getName()+"] destination = ["+destinationSearchField.getFinalLocation().getName() +"]");
                     mController.search(originSearchField.getFinalLocation(), destinationSearchField.getFinalLocation());
                 }
             }
@@ -143,14 +144,14 @@ public class SearchFragment extends Fragment implements ISearchFragment {
     public void setOriginLocation(ILocation origin) {
         // Change text of origin field
         // If both origin and destination are final, enable the searchbutton
-        Log.d(TAG, "setOriginLocation() called with: origin = [" + origin + "]");
+        Log.d(TAG, "setOriginLocation() called with: origin = [" + origin.getName() + "]");
         originSearchField.setFinal(origin);
         updateSearchState();
     }
 
     @Override
     public void setDestinationLocation(ILocation destination) {
-        Log.d(TAG, "setDestinationLocation() called with: destination = [" + destination + "]");
+        Log.d(TAG, "setDestinationLocation() called with: destination = [" + destination.getName() + "]");
         destinationSearchField.setFinal(destination);
         updateSearchState();
     }
