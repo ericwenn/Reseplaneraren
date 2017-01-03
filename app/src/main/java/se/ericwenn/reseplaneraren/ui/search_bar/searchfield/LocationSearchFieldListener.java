@@ -1,4 +1,4 @@
-package se.ericwenn.reseplaneraren.v2.ui.search_bar.searchfield;
+package se.ericwenn.reseplaneraren.ui.search_bar.searchfield;
 
 /**
  * Created by ericwenn on 11/6/16.

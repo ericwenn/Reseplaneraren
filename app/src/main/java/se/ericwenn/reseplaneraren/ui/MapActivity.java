@@ -1,4 +1,4 @@
-package se.ericwenn.reseplaneraren.v2.ui;
+package se.ericwenn.reseplaneraren.ui;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -27,16 +27,16 @@ import com.google.android.gms.location.LocationServices;
 
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
-import se.ericwenn.reseplaneraren.v2.SearchField;
-import se.ericwenn.reseplaneraren.v2.ui.locationsearch.ILocationSearchFragment;
-import se.ericwenn.reseplaneraren.v2.ui.locationsearch.LocationSearchFragmentController;
-import se.ericwenn.reseplaneraren.v2.ui.locationsearch.LocationSearchFragmentFactory;
-import se.ericwenn.reseplaneraren.v2.ui.map.IMapFragment;
-import se.ericwenn.reseplaneraren.v2.ui.map.MapFragmentController;
-import se.ericwenn.reseplaneraren.v2.ui.map.MapFragmentFactory;
-import se.ericwenn.reseplaneraren.v2.ui.search_bar.ISearchFragment;
-import se.ericwenn.reseplaneraren.v2.ui.search_bar.SearchFragment;
-import se.ericwenn.reseplaneraren.v2.ui.search_bar.SearchFragmentController;
+import se.ericwenn.reseplaneraren.SearchField;
+import se.ericwenn.reseplaneraren.ui.locationsearch.ILocationSearchFragment;
+import se.ericwenn.reseplaneraren.ui.locationsearch.LocationSearchFragmentController;
+import se.ericwenn.reseplaneraren.ui.locationsearch.LocationSearchFragmentFactory;
+import se.ericwenn.reseplaneraren.ui.map.IMapFragment;
+import se.ericwenn.reseplaneraren.ui.map.MapFragmentController;
+import se.ericwenn.reseplaneraren.ui.map.MapFragmentFactory;
+import se.ericwenn.reseplaneraren.ui.search_bar.ISearchFragment;
+import se.ericwenn.reseplaneraren.ui.search_bar.SearchFragment;
+import se.ericwenn.reseplaneraren.ui.search_bar.SearchFragmentController;
 
 public class MapActivity extends AppCompatActivity implements SearchFragmentController, LocationSearchFragmentController, MapFragmentController, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static final int SEARCH_BAR_FRAME = R.id.search_bar_frame;

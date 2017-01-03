@@ -9,7 +9,7 @@ import se.ericwenn.reseplaneraren.model.data.ILocation;
  */
 public interface ILocationBottomSheet {
 
-    void setLocation( ILocation l );
+    void setLocation(ILocation l);
     void show(FragmentManager fm, String tag);
     String getTag();
 

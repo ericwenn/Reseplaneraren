@@ -29,15 +29,13 @@ public class ResultAdapter extends RecyclerView.Adapter {
 
     private List<ITrip> mDataset = new ArrayList<>();
     private final Context context;
-    private TrackTripListener mTrackTripListener;
 
     private int expandedTripPosition = -1;
 
 
-    public ResultAdapter(Context context, TrackTripListener listener) {
+    public ResultAdapter(Context context) {
         super();
         this.context = context;
-        mTrackTripListener = listener;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -172,12 +170,6 @@ public class ResultAdapter extends RecyclerView.Adapter {
             }
         });
 
-        mHolder.mTrackTripButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mTrackTripListener.onTrackTrip( t );
-            }
-        });
     }
 
     @Override
@@ -187,6 +179,7 @@ public class ResultAdapter extends RecyclerView.Adapter {
 
 
     public void updateDataset( List<ITrip> newDataset ) {
+        Log.d(TAG, "updateDataset() called with: newDataset = [" + newDataset + "]");
         mDataset = newDataset;
         notifyDataSetChanged();
 

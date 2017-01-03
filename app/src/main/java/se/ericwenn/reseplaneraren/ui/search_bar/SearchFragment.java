@@ -1,4 +1,4 @@
-package se.ericwenn.reseplaneraren.v2.ui.search_bar;
+package se.ericwenn.reseplaneraren.ui.search_bar;
 
 
 import android.content.Context;
@@ -13,9 +13,9 @@ import android.widget.EditText;
 
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
-import se.ericwenn.reseplaneraren.v2.ui.search_bar.searchfield.ILocationSearchField;
-import se.ericwenn.reseplaneraren.v2.ui.search_bar.searchfield.LocationSearchField;
-import se.ericwenn.reseplaneraren.v2.ui.search_bar.searchfield.LocationSearchFieldListener;
+import se.ericwenn.reseplaneraren.ui.search_bar.searchfield.ILocationSearchField;
+import se.ericwenn.reseplaneraren.ui.search_bar.searchfield.LocationSearchField;
+import se.ericwenn.reseplaneraren.ui.search_bar.searchfield.LocationSearchFieldListener;
 
 /**
  * A simple {@link Fragment} subclass.

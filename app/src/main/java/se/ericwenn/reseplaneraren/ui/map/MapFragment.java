@@ -29,11 +29,11 @@ import java.util.List;
 
 import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
-import se.ericwenn.reseplaneraren.ui.FragmentController;
 import se.ericwenn.reseplaneraren.ui.LocationProvider;
+import se.ericwenn.reseplaneraren.ui.MarkerProviderImpl;
+import se.ericwenn.reseplaneraren.util.DataPromise;
 import se.ericwenn.reseplaneraren.ui.map.sheet.ILocationBottomSheet;
 import se.ericwenn.reseplaneraren.ui.map.sheet.LocationBottomSheetFactory;
-import se.ericwenn.reseplaneraren.util.DataPromise;
 
 
 /**
@@ -46,19 +46,15 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
 
     private static final String TAG = "MapFragment";
 
-    // Injected
-    private LocationProvider mLocationProvider;
-
-    // Injected
-    private MarkerProvider mMarkerProvider;
 
     // MainActivity
-    private FragmentController mController;
+    private MapFragmentController mController;
     private BiMap<ILocation, Marker> mMarkers = HashBiMap.create();
 
 
     private GoogleMap mMap;
     private ILocationBottomSheet mBottomSheet;
+    private MarkerProviderImpl mMarkerProvider;
 
     public MapFragment() {
         // Required empty public constructor
@@ -70,10 +66,8 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
      *
      * @return A new instance of fragment MapFragment.
      */
-    public static MapFragment newInstance(LocationProvider mLocationProvider, MarkerProvider mMarkerProvider) {
+    public static MapFragment newInstance() {
         MapFragment fragment = new MapFragment();
-        fragment.mMarkerProvider = mMarkerProvider;
-        fragment.mLocationProvider = mLocationProvider;
         return fragment;
     }
 
@@ -82,9 +76,9 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mController = (FragmentController) context;
+            mController = (MapFragmentController) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement FragmentController");
+            throw new ClassCastException(context.toString() + " must implement MapFragmentController");
         }
 
     }
@@ -92,6 +86,10 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mMarkerProvider = new MarkerProviderImpl();
+
+
+
     }
 
     @Override
@@ -107,7 +105,6 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mLocationProvider.setLocationChangedListener(this);
         mBottomSheet = LocationBottomSheetFactory.create();
 
         setupMap();
@@ -148,30 +145,15 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
                     }
                 });
 
+                /*
                 final Location lastLocation = mLocationProvider.getLastLocation();
                 setCenter( lastLocation.getLatitude(), lastLocation.getLongitude());
+                */
                 setZoom( 14f );
 
 
-                DataPromise<List<ILocation>> dataPromise = mMarkerProvider.getMarkers(lastLocation.getLatitude(), lastLocation.getLongitude());
-                dataPromise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
-                    @Override
-                    public void onResolve(List<ILocation> data) {
-                        addMarkers(data);
-                    }
-                });
-                dataPromise.onReject(new DataPromise.RejectedHandler<List<ILocation>>() {
-                    @Override
-                    public void onReject(Exception e) {
-                        DataPromise<List<ILocation>> promise = mMarkerProvider.getMarkers(lastLocation.getLatitude(), lastLocation.getLongitude());
-                        promise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
-                            @Override
-                            public void onResolve(List<ILocation> data) {
-                                addMarkers(data);
-                            }
-                        });
-                    }
-                });
+
+
 
 
                 mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {

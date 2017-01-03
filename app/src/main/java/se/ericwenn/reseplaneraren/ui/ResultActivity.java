@@ -1,4 +1,4 @@
-package se.ericwenn.reseplaneraren.v2.ui;
+package se.ericwenn.reseplaneraren.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,9 +13,8 @@ import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
 import se.ericwenn.reseplaneraren.model.data.trip.ITrip;
-import se.ericwenn.reseplaneraren.ui.shared.SimpleRecyclerViewDivider;
 import se.ericwenn.reseplaneraren.util.DataPromise;
-import se.ericwenn.reseplaneraren.v2.ui.result.ResultAdapter;
+import se.ericwenn.reseplaneraren.ui.result.ResultAdapter;
 
 /**
  * Created by ericwenn on 11/6/16.

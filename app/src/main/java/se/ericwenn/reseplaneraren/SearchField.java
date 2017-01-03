@@ -1,4 +1,4 @@
-package se.ericwenn.reseplaneraren.v2;
+package se.ericwenn.reseplaneraren;
 
 /**
  * Created by ericwenn on 11/5/16.

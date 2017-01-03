@@ -19,9 +19,9 @@ import se.ericwenn.reseplaneraren.model.data.ILocation;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
 import se.ericwenn.reseplaneraren.model.providers.ILocationProvider;
 import se.ericwenn.reseplaneraren.model.providers.LocationProvider;
-import se.ericwenn.reseplaneraren.ui.FragmentController;
-import se.ericwenn.reseplaneraren.ui.shared.SimpleRecyclerViewDivider;
+import se.ericwenn.reseplaneraren.ui.SimpleRecyclerViewDivider;
 import se.ericwenn.reseplaneraren.util.DataPromise;
+import se.ericwenn.reseplaneraren.SearchField;
 
 
 public class LocationSearchFragment extends Fragment implements ILocationSearchFragment {
@@ -34,8 +34,8 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
 
 
 
-    private FragmentController mController;
-    private FragmentController.Field activeField;
+    private LocationSearchFragmentController mController;
+    private SearchField activeField;
 
     public LocationSearchFragment() {
         // Required empty public constructor
@@ -56,9 +56,9 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
         Log.d(TAG, "onAttach()");
         super.onAttach(context);
         try {
-            mController = (FragmentController) context;
+            mController = (LocationSearchFragmentController) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException( context.toString() + " must implement FragmentController");
+            throw new ClassCastException( context.toString() + " must implement LocationSearchFragmentController");
         }
     }
 
@@ -118,9 +118,8 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
     }
 
     @Override
-    public void changeSearchTerm(String searchTerm, FragmentController.Field f) {
+    public void changeSearchTerm(String searchTerm, SearchField f) {
         activeField = f;
-
         if( searchTerm.length() == 0 ) {
 
 

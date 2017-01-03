@@ -10,17 +10,17 @@ import se.ericwenn.reseplaneraren.util.DataPromise;
  */
 public interface IMapFragment {
 
-    void setMarkers( List<ILocation> markers );
-    void addMarkers( List<ILocation> markers );
-    void removeMarkers( List<ILocation> markers );
-    void removeMarker( ILocation marker );
+    void setMarkers(List<ILocation> markers);
+    void addMarkers(List<ILocation> markers);
+    void removeMarkers(List<ILocation> markers);
+    void removeMarker(ILocation marker);
 
-    void setCenter( double latitude, double longitude );
+    void setCenter(double latitude, double longitude);
 
-    void setZoom( float zlevel );
+    void setZoom(float zlevel);
 
     interface MarkerProvider {
-        DataPromise<List<ILocation>> getMarkers( double lat, double lon );
+        DataPromise<List<ILocation>> getMarkers(double lat, double lon);
     }
 
 }

@@ -1,7 +1,7 @@
-package se.ericwenn.reseplaneraren.v2.ui.locationsearch;
+package se.ericwenn.reseplaneraren.ui.locationsearch;
 
 import se.ericwenn.reseplaneraren.model.data.ILocation;
-import se.ericwenn.reseplaneraren.v2.SearchField;
+import se.ericwenn.reseplaneraren.SearchField;
 
 /**
  * Created by ericwenn on 11/5/16.

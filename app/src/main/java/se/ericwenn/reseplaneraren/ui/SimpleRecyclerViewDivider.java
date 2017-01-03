@@ -1,4 +1,4 @@
-package se.ericwenn.reseplaneraren.ui.shared;
+package se.ericwenn.reseplaneraren.ui;
 
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;

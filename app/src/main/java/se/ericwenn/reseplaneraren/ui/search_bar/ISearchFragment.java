@@ -1,4 +1,4 @@
-package se.ericwenn.reseplaneraren.v2.ui.search_bar;
+package se.ericwenn.reseplaneraren.ui.search_bar;
 
 import se.ericwenn.reseplaneraren.model.data.ILocation;
 
