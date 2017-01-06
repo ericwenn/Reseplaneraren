@@ -15,13 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.ericwenn.reseplaneraren.R;
+import se.ericwenn.reseplaneraren.SearchField;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
-import se.ericwenn.reseplaneraren.model.providers.ILocationProvider;
-import se.ericwenn.reseplaneraren.model.providers.LocationProvider;
+import se.ericwenn.reseplaneraren.services.StoredLocations;
 import se.ericwenn.reseplaneraren.ui.SimpleRecyclerViewDivider;
 import se.ericwenn.reseplaneraren.util.DataPromise;
-import se.ericwenn.reseplaneraren.SearchField;
 
 
 public class LocationSearchFragment extends Fragment implements ILocationSearchFragment {
@@ -122,13 +121,12 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
         activeField = f;
         if( searchTerm.length() == 0 ) {
 
-
-            ILocationProvider locationProvider = new LocationProvider();
-            DataPromise<List<ILocation>> promise = locationProvider.favorites();
-            promise.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
+            StoredLocations storedLocations = new StoredLocations(getContext());
+            DataPromise<List<ILocation>> lastLocations = storedLocations.getLastLocations();
+            lastLocations.onResolve(new DataPromise.ResolvedHandler<List<ILocation>>() {
                 @Override
                 public void onResolve(List<ILocation> data) {
-                    mAdapter.updateDataset( data );
+                    mAdapter.updateDataset(data);
                 }
             });
 

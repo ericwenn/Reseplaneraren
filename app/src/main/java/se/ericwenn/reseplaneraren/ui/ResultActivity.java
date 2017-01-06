@@ -13,6 +13,7 @@ import se.ericwenn.reseplaneraren.R;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
 import se.ericwenn.reseplaneraren.model.data.trip.ITrip;
+import se.ericwenn.reseplaneraren.services.StoredLocations;
 import se.ericwenn.reseplaneraren.util.DataPromise;
 import se.ericwenn.reseplaneraren.ui.result.ResultAdapter;
 
@@ -41,6 +42,9 @@ public class ResultActivity extends AppCompatActivity {
         from = (ILocation) i.getSerializableExtra(ORIGIN_EXTRA);
         to = (ILocation) i.getSerializableExtra(DESTINATION_EXTRA);
 
+        saveLocations(from,to);
+
+
         Log.d(TAG, "onCreate: Search started, origin = ["+from.getName()+"] destination = ["+to.getName()+"]");
 
 
@@ -55,6 +59,12 @@ public class ResultActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void saveLocations(ILocation from, ILocation to) {
+        StoredLocations storedLocations = new StoredLocations(getApplicationContext());
+        storedLocations.addLocation(from);
+        storedLocations.addLocation(to);
     }
 
 
