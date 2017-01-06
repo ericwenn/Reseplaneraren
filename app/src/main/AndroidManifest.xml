@@ -32,7 +32,6 @@
 
         <activity
             android:name=".ui.MapActivity"
-            android:label="@string/title_activity_map"
             android:screenOrientation="portrait"
             android:configChanges="orientation"
             android:theme="@style/AppTheme.NoActionBar">
