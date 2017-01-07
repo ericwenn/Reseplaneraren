@@ -3,7 +3,6 @@ package se.ericwenn.reseplaneraren.ui.result;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -109,7 +108,6 @@ class TripLegAdapter extends RecyclerView.Adapter {
     }
 
     public void updateDataset( List<? extends ILeg> newDataset ) {
-        Log.d(TAG, "updateDataset() called with: " + "newDataset = [" + newDataset + "]");
         mDataset = newDataset;
         notifyDataSetChanged();
     }

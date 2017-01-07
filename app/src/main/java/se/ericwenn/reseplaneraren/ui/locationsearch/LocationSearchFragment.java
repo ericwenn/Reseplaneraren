@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +51,6 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
 
     @Override
     public void onAttach(Context context) {
-        Log.d(TAG, "onAttach()");
         super.onAttach(context);
         try {
             mController = (LocationSearchFragmentController) context;
@@ -63,14 +61,12 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
         mAdapter = new AutoCompleteAdapter();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView()");
 
         // Inflate the layout for this fragment
 
@@ -84,20 +80,17 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
 
     @Override
     public void onStart() {
-        Log.d(TAG, "onStart()");
         super.onStart();
 
     }
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume()");
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        Log.d(TAG, "onPause()");
         super.onPause();
 
     }
@@ -146,7 +139,6 @@ public class LocationSearchFragment extends Fragment implements ILocationSearchF
                 @Override
                 public void onReject(Exception e) {
                     mAdapter.updateDataset(new ArrayList<ILocation>());
-                    Log.d(TAG, "onReject() called with: " + "e = [" + e + "]");
                     }
             });
         }

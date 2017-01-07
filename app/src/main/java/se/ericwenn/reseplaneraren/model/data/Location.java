@@ -1,7 +1,5 @@
 package se.ericwenn.reseplaneraren.model.data;
 
-import android.util.Log;
-
 /**
  * Created by ericwenn on 7/14/16.
  */
@@ -31,7 +29,6 @@ public class Location implements ILocation {
 
     @Override
     public LocationType getLocationType() {
-        Log.d(TAG, "getLocationType: type="+(type == null ? "null" : "'"+type+"'"));
         if(type == null) {
             return LocationType.STOP;
         }

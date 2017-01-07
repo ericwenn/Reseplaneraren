@@ -183,7 +183,6 @@ public class MapFragment extends Fragment implements IMapFragment, LocationProvi
 
     @Override
     public void onDetach() {
-        Log.d(TAG, "onDetach()");
         super.onDetach();
         mController = null;
     }

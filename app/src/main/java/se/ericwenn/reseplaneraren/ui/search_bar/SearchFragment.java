@@ -92,7 +92,6 @@ public class SearchFragment extends Fragment implements ISearchFragment {
             @Override
             public void onClick(View v) {
                 if( destinationSearchField.isFinal() && originSearchField.isFinal()) {
-                    Log.d(TAG, "onClick: origin = ["+originSearchField.getFinalLocation().getName()+"] destination = ["+destinationSearchField.getFinalLocation().getName() +"]");
                     mController.search(originSearchField.getFinalLocation(), destinationSearchField.getFinalLocation());
                 }
             }
@@ -111,7 +110,6 @@ public class SearchFragment extends Fragment implements ISearchFragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume() called");
         destinationSearchField.start();
         originSearchField.start();
     }
@@ -121,7 +119,6 @@ public class SearchFragment extends Fragment implements ISearchFragment {
         super.onPause();
         destinationSearchField.stop();
         originSearchField.stop();
-        Log.d(TAG, "onPause() called");
 
     }
 
@@ -144,26 +141,24 @@ public class SearchFragment extends Fragment implements ISearchFragment {
     public void setOriginLocation(ILocation origin) {
         // Change text of origin field
         // If both origin and destination are final, enable the searchbutton
-        Log.d(TAG, "setOriginLocation() called with: origin = [" + origin.getName() + "]");
         originSearchField.setFinal(origin);
         updateSearchState();
     }
 
     @Override
     public void setDestinationLocation(ILocation destination) {
-        Log.d(TAG, "setDestinationLocation() called with: destination = [" + destination.getName() + "]");
         destinationSearchField.setFinal(destination);
         updateSearchState();
     }
 
 
     private void updateSearchState() {
-        Log.d(TAG, "updateSearchState: Origin is final: "+ originSearchField.isFinal());
-        Log.d(TAG, "updateSearchState: Destination is final: "+ destinationSearchField.isFinal());
 
         if( destinationSearchField.isFinal() && originSearchField.isFinal()) {
+            Log.d(TAG, "Both origin and destination are valid locations, search is enabled...");
             enableSearch();
         } else {
+            Log.d(TAG, "One of origin and destination are not valid locations, search is disabled...");
             disableSearch();
         }
     }
@@ -171,7 +166,6 @@ public class SearchFragment extends Fragment implements ISearchFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d(TAG, "onSaveInstanceState() called with: outState = [" + outState + "]");
     }
 
     private void disableSearch() {

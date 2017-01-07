@@ -1,7 +1,6 @@
 package se.ericwenn.reseplaneraren.services;
 
 import android.os.Looper;
-import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.RequestParams;
@@ -35,7 +34,6 @@ public class RestClient implements IRestClient {
 
 
     public void addHeader(String header, String value){
-        Log.d(TAG, "addHeader() called with:" + "header = [" + header + "], value = [" + value + "]");
         getClient().addHeader(header, value);
     }
 
@@ -63,7 +61,6 @@ public class RestClient implements IRestClient {
         String absUrl;
         if( url == null ) {
             absUrl = DEBUG_URL + "/get";
-            Log.d(TAG, "get debug");
         } else {
             absUrl = getAbsoluteUrl(url);
         }

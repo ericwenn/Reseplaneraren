@@ -57,7 +57,7 @@ public class VasttrafikAuthorizer implements IAuthorizer {
     @Override
     public void authorize(IRestClient client, AuthorizationListener l) {
         if( token == null || !token.isValid()) {
-            Log.d(TAG, "authorize: Token is not valid, authorizing....");
+            Log.d(TAG, "Token is not valid, attempting to authorize....");
             getToken(client, l);
         } else {
             client.addHeader("Authorization", "Bearer "+token.getToken());
@@ -102,7 +102,7 @@ public class VasttrafikAuthorizer implements IAuthorizer {
 
             @Override
             public void onFailure(int statusCode, String responseBody) {
-                Log.d(TAG, "onFailure() called with: " + "statusCode = [" + statusCode + "], responseBody = [" + responseBody + "]");
+                Log.e(TAG, "Authorization failed with status ["+statusCode+"] and responseBody ["+responseBody+"]");
             }
         });
     }

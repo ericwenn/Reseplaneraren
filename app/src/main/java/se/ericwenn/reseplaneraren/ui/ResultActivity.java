@@ -45,7 +45,7 @@ public class ResultActivity extends AppCompatActivity {
         saveLocations(from,to);
 
 
-        Log.d(TAG, "onCreate: Search started, origin = ["+from.getName()+"] destination = ["+to.getName()+"]");
+        Log.d(TAG, "Search started, origin = ["+from.getName()+"] destination = ["+to.getName()+"]");
 
 
         mAdapter = new ResultAdapter(this);
@@ -72,7 +72,6 @@ public class ResultActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        Log.d(TAG, "onStart() called");
         DataPromise<List<ITrip>> promise = VasttrafikAPIBridge.getInstance().getTrips(from, to);
         promise.onResolve(new DataPromise.ResolvedHandler<List<ITrip>>() {
             @Override

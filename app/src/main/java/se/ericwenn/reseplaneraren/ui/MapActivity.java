@@ -139,7 +139,6 @@ public class MapActivity extends AppCompatActivity implements SearchFragmentCont
         mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                Log.d(TAG, "onStateChanged() called with: bottomSheet = [" + bottomSheet + "], newState = [" + newState + "]");
                 if( newState == BottomSheetBehavior.STATE_EXPANDED) {
                     bottomSheetFrame.requestLayout();
                     bottomSheetFrame.invalidate();
@@ -183,19 +182,16 @@ public class MapActivity extends AppCompatActivity implements SearchFragmentCont
 
     @Override
     public void originChanged(String searchTerm) {
-        Log.d(TAG, "originChanged() called with: " + "searchTerm = [" + searchTerm + "]");
         changeSearchTerm(searchTerm, SearchField.ORIGIN);
     }
 
     @Override
     public void destinationChanged(String searchTerm) {
-        Log.d(TAG, "destinationChanged() called with: " + "searchTerm = [" + searchTerm + "]");
         changeSearchTerm(searchTerm, SearchField.DESTINATION);
     }
 
     @Override
     public void search(ILocation origin, ILocation destination) {
-        Log.d(TAG, "search() called with: origin = [" + origin.getName() + "], destination = [" + destination.getName() + "]");
         Intent intent = new Intent(this, ResultActivity.class);
         intent.putExtra(ResultActivity.ORIGIN_EXTRA, origin);
         intent.putExtra(ResultActivity.DESTINATION_EXTRA, destination);
@@ -213,23 +209,19 @@ public class MapActivity extends AppCompatActivity implements SearchFragmentCont
         if( mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
-        Log.d(TAG, "onLocationSelected() called with: " + "l = [" + l + "], field = [" + field + "]");
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.d(TAG, "onConnected() called with: bundle = [" + bundle + "]");
         updateMapLocation();
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.d(TAG, "onConnectionSuspended() called with: i = [" + i + "]");
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.d(TAG, "onConnectionFailed() called with: connectionResult = [" + connectionResult + "]");
     }
 
 

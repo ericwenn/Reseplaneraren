@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.ericwenn.reseplaneraren.R;
+import se.ericwenn.reseplaneraren.SearchField;
 import se.ericwenn.reseplaneraren.model.data.IDeparture;
 import se.ericwenn.reseplaneraren.model.data.ILocation;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
-import se.ericwenn.reseplaneraren.util.DataPromise;
-import se.ericwenn.reseplaneraren.SearchField;
 import se.ericwenn.reseplaneraren.ui.map.MapFragmentController;
+import se.ericwenn.reseplaneraren.util.DataPromise;
 
 /**
  * Created by ericwenn on 8/4/16.
@@ -40,7 +39,6 @@ public class LocationBottomSheet extends BottomSheetDialogFragment implements IL
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        Log.d(TAG, "onAttach()");
         try {
             mController = (MapFragmentController) activity;
         } catch (ClassCastException e) {
@@ -55,20 +53,17 @@ public class LocationBottomSheet extends BottomSheetDialogFragment implements IL
         if( savedInstanceState != null ) {
             mLocation = (ILocation) savedInstanceState.get("location");
         }
-        Log.d(TAG, "onCreate()");
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView()");
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
-        Log.d(TAG, "setupDialog()");
         View contentView = View.inflate(getContext(), R.layout.map_bottomsheet, null);
         dialog.setContentView(contentView);
 
@@ -114,7 +109,6 @@ public class LocationBottomSheet extends BottomSheetDialogFragment implements IL
 
 
 
-        Log.d(TAG, "setupDialog: mLocationName = ["+mLocationName+"]");
 
     }
 
@@ -126,7 +120,6 @@ public class LocationBottomSheet extends BottomSheetDialogFragment implements IL
 
     @Override
     public void setLocation(ILocation l) {
-        Log.d(TAG, "setLocation()");
         mLocation = l;
         mAdapter = new DepartureAdapter();
 
