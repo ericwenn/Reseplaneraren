@@ -84,7 +84,6 @@ public class ResultAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Log.d(TAG, "onBindViewHolder() called with: holder = [" + holder + "], position = [" + position + "]");
 
         final ViewHolder mHolder = (ViewHolder) holder;
         final ITrip t = mDataset.get(position);
@@ -218,10 +217,5 @@ public class ResultAdapter extends RecyclerView.Adapter {
 
 
 
-    private void closeCurrentlyExpandedItem() {
-        if (expandedTripPosition > -1) {
-
-        }
-    }
 
 }
