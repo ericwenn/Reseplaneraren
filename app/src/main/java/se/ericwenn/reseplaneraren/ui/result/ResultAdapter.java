@@ -2,6 +2,7 @@ package se.ericwenn.reseplaneraren.ui.result;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -49,6 +50,9 @@ public class ResultAdapter extends RecyclerView.Adapter {
 
         public RecyclerView mRecyclerView;
 
+        public LinearLayout mLegIcons;
+
+
         public ViewHolder(final View itemView) {
             super(itemView);
 
@@ -69,6 +73,8 @@ public class ResultAdapter extends RecyclerView.Adapter {
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager( context );
             mRecyclerView.setLayoutManager( mLayoutManager );
 
+            mLegIcons = (LinearLayout) itemView.findViewById(R.id.trip_leg_icons);
+
         }
     }
 
@@ -83,6 +89,7 @@ public class ResultAdapter extends RecyclerView.Adapter {
 
         final ViewHolder mHolder = (ViewHolder) holder;
         final ITrip t = mDataset.get(position);
+        Resources res = context.getResources();
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
@@ -92,17 +99,12 @@ public class ResultAdapter extends RecyclerView.Adapter {
 
         // Trip departureOffset
         if( t.getDepartureOffset() != 0) {
-            Resources res = context.getResources();
-            int color;
             String token;
             if( t.getDepartureOffset() < 0 ) {
-                color = res.getColor(R.color.time_offset_positive);
                 token = "-";
             } else {
-                color = res.getColor(R.color.time_offset_negative);
                 token = "+";
             }
-            mHolder.mDepartureOffset.setTextColor( color );
             mHolder.mDepartureOffset.setText( res.getString(R.string.time_offset, token, t.getDepartureOffset()));
         } else {
             mHolder.mDepartureOffset.setVisibility(View.GONE);
@@ -116,17 +118,12 @@ public class ResultAdapter extends RecyclerView.Adapter {
 
         // Trip arrivalOffset
         if( t.getArrivalOffset() != 0) {
-            Resources res = context.getResources();
-            int color;
             String token;
             if( t.getArrivalOffset() < 0 ) {
-                color = res.getColor(R.color.time_offset_positive);
                 token = "-";
             } else {
-                color = res.getColor(R.color.time_offset_negative);
                 token = "+";
             }
-            mHolder.mArrivalOffset.setTextColor( color );
             mHolder.mArrivalOffset.setText( res.getString(R.string.time_offset, token, t.getDepartureOffset()));
         } else {
             mHolder.mArrivalOffset.setVisibility( View.GONE);
@@ -135,6 +132,29 @@ public class ResultAdapter extends RecyclerView.Adapter {
         String additional = "";
 
         additional += t.getNumberOfSwitches() + " byten";
+
+        List<? extends ILeg> legs = t.getLegs();
+
+        float scale = res.getDisplayMetrics().density;
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(0,0, (int) (scale*4 + 0.5f), 0);
+        for (ILeg leg : legs) {
+            TextView icon = new TextView(context);
+            icon.setTypeface(null, Typeface.BOLD);
+            icon.setLayoutParams(layoutParams);
+
+            icon.setPadding((int) (5*scale + 0.5f), (int) (3*scale + 0.5f), (int) (5*scale + 0.5f), (int) (3*scale + 0.5f));
+            icon.setTextSize( 12 );
+            try {
+                icon.setBackgroundColor(leg.getForegroundColor());
+                icon.setTextColor(leg.getBackgroundColor());
+            } catch (NullPointerException e) {
+                continue;
+            }
+            icon.setText(leg.getShortName());
+
+            mHolder.mLegIcons.addView(icon);
+        }
 
         mHolder.mAdditionInformation.setText(additional);
 
