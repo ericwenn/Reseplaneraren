@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MenuItem;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -14,8 +16,8 @@ import se.ericwenn.reseplaneraren.model.data.ILocation;
 import se.ericwenn.reseplaneraren.model.data.VasttrafikAPIBridge;
 import se.ericwenn.reseplaneraren.model.data.trip.ITrip;
 import se.ericwenn.reseplaneraren.services.StoredLocations;
-import se.ericwenn.reseplaneraren.util.DataPromise;
 import se.ericwenn.reseplaneraren.ui.result.ResultAdapter;
+import se.ericwenn.reseplaneraren.util.DataPromise;
 
 /**
  * Created by ericwenn on 11/6/16.
@@ -44,6 +46,7 @@ public class ResultActivity extends AppCompatActivity {
 
         saveLocations(from,to);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Log.d(TAG, "Search started, origin = ["+from.getName()+"] destination = ["+to.getName()+"]");
 
@@ -59,6 +62,14 @@ public class ResultActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         mRecyclerView.setAdapter(mAdapter);
+
+        TextView from_name = (TextView) findViewById(R.id.result_from_name);
+        TextView to_name = (TextView) findViewById(R.id.result_to_name);
+
+        if( from_name != null && to_name != null) {
+            from_name.setText(from.getName());
+            to_name.setText(to.getName());
+        }
     }
 
     private void saveLocations(ILocation from, ILocation to) {
@@ -79,6 +90,20 @@ public class ResultActivity extends AppCompatActivity {
                 mAdapter.updateDataset(data);
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // app icon in action bar clicked; go home
+                //Intent intent = new Intent(this, MapActivity.class);
+                //startActivity(intent);
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
 

@@ -14,5 +14,5 @@
     <string name="time_divider">–</string>
     <string name="title_activity_map">MapActivity</string>
     <string name="search">SÖK</string>
-    <string name="title_activity_result">Resultat</string>
+    <string name="title_activity_result"></string>
 </resources>
