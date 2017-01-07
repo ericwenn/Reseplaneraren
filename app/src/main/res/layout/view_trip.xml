@@ -21,7 +21,7 @@
             android:padding="16dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_toLeftOf="@+id/trip_track_button">
+            android:layout_toLeftOf="@+id/trip_travel_time">
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -85,11 +85,11 @@
             </LinearLayout>
 
         </LinearLayout>
-        <ImageView
-            android:id="@+id/trip_track_button"
+        <TextView
+            android:id="@+id/trip_travel_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_notifications_active_black_24dp"
+            tools:text="12m"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"

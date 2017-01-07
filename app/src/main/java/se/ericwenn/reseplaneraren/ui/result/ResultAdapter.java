@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -46,8 +45,7 @@ public class ResultAdapter extends RecyclerView.Adapter {
         public TextView mArrivalOffset;
         public TextView mAdditionInformation;
         public LinearLayout mToggleTrigger;
-
-        public ImageView mTrackTripButton;
+        public TextView mTravelTime;
 
         public RecyclerView mRecyclerView;
 
@@ -65,8 +63,7 @@ public class ResultAdapter extends RecyclerView.Adapter {
             mArrivalOffset = (TextView) itemView.findViewById(R.id.trip_arrival_offset);
 
             mAdditionInformation = (TextView) itemView.findViewById(R.id.trip_additional_info);
-
-            mTrackTripButton = (ImageView) itemView.findViewById(R.id.trip_track_button);
+            mTravelTime = (TextView) itemView.findViewById(R.id.trip_travel_time);
 
 
             mRecyclerView = (RecyclerView) itemView.findViewById(R.id.leg_recyclerView);
@@ -166,8 +163,11 @@ public class ResultAdapter extends RecyclerView.Adapter {
         } else {
             additional += (childCount - 1) + " byten";
         }
+
+
         mHolder.mAdditionInformation.setText(additional);
 
+        mHolder.mTravelTime.setText(String.format(Locale.getDefault(), "%dm", t.getTotalTravelMinutes()));
 
 
         final TripLegAdapter legAdapter = (TripLegAdapter) mHolder.mRecyclerView.getAdapter();

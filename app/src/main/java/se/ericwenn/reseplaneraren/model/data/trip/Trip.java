@@ -81,6 +81,6 @@ public class Trip implements ITrip {
 
     @Override
     public int getTotalTravelMinutes() {
-        return 0;
+        return (int) ((getArrivalTime().getTime() / 60000 + getArrivalOffset())  - (getDepartureTime().getTime() / 60000 + getDepartureOffset()));
     }
 }
