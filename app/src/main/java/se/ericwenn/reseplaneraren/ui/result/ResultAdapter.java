@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,6 +87,7 @@ public class ResultAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        Log.d(TAG, "onBindViewHolder() called with: holder = [" + holder + "], position = [" + position + "]");
 
         final ViewHolder mHolder = (ViewHolder) holder;
         final ITrip t = mDataset.get(position);
@@ -129,34 +131,44 @@ public class ResultAdapter extends RecyclerView.Adapter {
             mHolder.mArrivalOffset.setVisibility( View.GONE);
         }
 
+
+        if( mHolder.mLegIcons.getChildCount() == 0) {
+
+            List<? extends ILeg> legs = t.getLegs();
+            float scale = res.getDisplayMetrics().density;
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(0,0, (int) (scale*4 + 0.5f), 0);
+            for (ILeg leg : legs) {
+                TextView icon = new TextView(context);
+                icon.setTypeface(null, Typeface.BOLD);
+                icon.setLayoutParams(layoutParams);
+
+                icon.setPadding((int) (5*scale + 0.5f), (int) (3*scale + 0.5f), (int) (5*scale + 0.5f), (int) (3*scale + 0.5f));
+                icon.setTextSize( 12 );
+                try {
+                    icon.setBackgroundColor(leg.getForegroundColor());
+                    icon.setTextColor(leg.getBackgroundColor());
+                } catch (NullPointerException e) {
+                    continue;
+                }
+                icon.setText(leg.getShortName());
+
+                mHolder.mLegIcons.addView(icon);
+            }
+        }
         String additional = "";
 
-        additional += t.getNumberOfSwitches() + " byten";
-
-        List<? extends ILeg> legs = t.getLegs();
-
-        float scale = res.getDisplayMetrics().density;
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0,0, (int) (scale*4 + 0.5f), 0);
-        for (ILeg leg : legs) {
-            TextView icon = new TextView(context);
-            icon.setTypeface(null, Typeface.BOLD);
-            icon.setLayoutParams(layoutParams);
-
-            icon.setPadding((int) (5*scale + 0.5f), (int) (3*scale + 0.5f), (int) (5*scale + 0.5f), (int) (3*scale + 0.5f));
-            icon.setTextSize( 12 );
-            try {
-                icon.setBackgroundColor(leg.getForegroundColor());
-                icon.setTextColor(leg.getBackgroundColor());
-            } catch (NullPointerException e) {
-                continue;
-            }
-            icon.setText(leg.getShortName());
-
-            mHolder.mLegIcons.addView(icon);
+        int childCount = mHolder.mLegIcons.getChildCount();
+        if( childCount == 1) {
+            additional += "Inga byten";
+        } else if( childCount == 2 ) {
+            additional += "1 byte";
+        } else {
+            additional += (childCount - 1) + " byten";
         }
-
         mHolder.mAdditionInformation.setText(additional);
+
+
 
         final TripLegAdapter legAdapter = (TripLegAdapter) mHolder.mRecyclerView.getAdapter();
         final RecyclerView legRecyclerView = mHolder.mRecyclerView;
