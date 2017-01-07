@@ -3,6 +3,8 @@ package se.ericwenn.reseplaneraren.ui.search_bar.searchfield;
 import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 
 import se.ericwenn.reseplaneraren.model.data.ILocation;
@@ -13,6 +15,7 @@ import se.ericwenn.reseplaneraren.model.data.ILocation;
 
 public class LocationSearchField implements ILocationSearchField {
     private final TextWatcher onChangeListener;
+    private final View.OnFocusChangeListener mOnFocusChangeListener;
     private String searchTerm = "";
     private ILocation finalLocation = null;
     private EditText textField;
@@ -41,11 +44,21 @@ public class LocationSearchField implements ILocationSearchField {
                 listener.searchChanged(searchTerm);
             }
         };
+
+        this.mOnFocusChangeListener = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if( hasFocus && ((EditText)v).getText().toString().equals("")) {
+                    listener.searchChanged("");
+                }
+            }
+        };
     }
 
 
     public void start() {
         this.textField.addTextChangedListener(this.onChangeListener);
+        this.textField.setOnFocusChangeListener(this.mOnFocusChangeListener);
     }
 
     public void stop() {
